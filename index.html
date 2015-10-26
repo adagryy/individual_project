@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-MfvZlkHCEqatNoGiOXveE8FIwMzZg4W85qfrfIFBfYc= sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="mystyle.css">
+    <link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <title>Doctors supporting app</title>
+</head>
+<script src="javascript.js">
+</script>
+
+<body>
+    <header class="navbar navbar-fixed-top navbar-inverse">
+        <div class="button_aligned">
+            <button class="btn btn-danger" type="button" id="reset" onclick="reload_page()">Reset application</button>
+        
+        <span class="btn btn-primary btn-file" id="span_button">
+                        Choose file...<input  type="file" name="img" accept=".png, .jpg, .jpeg" />
+                        </span>
+        <button class="btn btn-primary" type="button" id="show_image_button" onclick="show_image()"> Wyświetl plik</button>
+        </file></div>
+    </header>
+    <div class="container-fluid">
+        <div class="jumbotron">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown ple
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li class="button-margin">
+                        <button type="button" class="btn btn-info">Default</button>
+                    </li>
+                    <li><a href="#">CSS</a></li>
+                    <li><a href="#">JavaScript</a></li>
+                </ul>
+            </div>
+            <p>
+                <div class="box">X:</div>
+                <div id="x" class="box"> </div>
+                <div class="box">Y:</div>
+                <div id="y" class="box"></div>
+                <br>
+            </p>
+            <div class="mini-layout fluid">
+                <div class="inline1 col-sm-3">
+                    <ul class="well list-group" id="data-list-group">
+                    f
+                        <!-- <li class="list-group-item">First item</li>
+                        <li class="list-group-item">Second item</li>
+                        <li class="list-group-item">Third item</li> -->
+                    </ul>
+                </div>
+                <form name="image" id="image" enctype="multipart/form-data" action="" method="post" class="col-sm-9">
+                    <div class="well" id="info">Współrzędna X:
+                        <br> Współrzędna Y: </div>
+                    <div id="image_display"></div>
+                   
+                    <script type="text/javascript">
+                    <!--
+                    var myImg = document.getElementById("image_display");
+                    myImg.onmousemove = GetCoordinates;
+                    $(document).ready(function() {
+
+                        $("#image_display").dblclick(function() {
+                            document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
+                        });
+                    });
+
+                    $('img').change(function() {
+
+                        var u = URL.createObjectURL(this.files[0]);
+                        var img = new Image;
+
+                        img.onload = function() {
+                            alert(img.width + " " + img.height);
+                        };
+
+                        img.src = u;
+
+                    });
+                    //-->
+                    </script>
+                    <div class="container_for_image" style="height: 100%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">Panel Footer</div>
+</body>
+
+</html>
