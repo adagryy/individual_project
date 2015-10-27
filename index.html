@@ -19,7 +19,7 @@
     <header class="navbar navbar-fixed-top navbar-inverse">
         <div class="button_aligned">
             <button class="btn btn-danger" type="button" id="reset" onclick="reload_page()">Reset application</button>
-        
+
         <span class="btn btn-primary btn-file" id="span_button">
                         Choose file...<input  type="file" name="img" accept=".png, .jpg, .jpeg" />
                         </span>
@@ -29,8 +29,9 @@
     <div class="container-fluid">
         <div class="jumbotron">
             <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Wyeksportuj dane...
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Export data...
                     <span class="caret"></span></button>
+                    <button class="btn btn-info" type="button" id="lock_button">Start marking</button>
                 <ul class="dropdown-menu">
                     <li class="button-margin">
                         <button type="button" class="btn btn-info">Excel</button>
@@ -39,6 +40,7 @@
                     <li><a href="#">CSV</a></li>
                 </ul>
             </div>
+
             <p>
                 <div class="box">X:</div>
                 <div id="x" class="box"> </div>
@@ -49,14 +51,16 @@
             <div class="mini-layout fluid">
                 <div class="inline1 col-sm-3">
                     <ul class="well list-group" id="data-list-group">
-                    
+
                     </ul>
                 </div>
                 <form name="image" id="image" enctype="multipart/form-data" action="" method="post" class="col-sm-9">
-                    <div class="well" id="info">Współrzędna X:
-                        <br> Współrzędna Y: </div>
+                    <div class="well" id="info">
+                        Współrzędna X:
+                        <br> Współrzędna Y:
+                    </div>
                     <div id="image_display"></div>
-                   
+
                     <script type="text/javascript">
                     <!--
                     var myImg = document.getElementById("image_display");

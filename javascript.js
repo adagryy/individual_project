@@ -12,6 +12,10 @@ function dd() {
     $("#image_display").dblclick(function() {
         $("#data-list-group").append("X: " + String(xx) + " Y: " + String(yy) + "<br>");
     });
+    $("#lock_button").click(function(){
+      $("#image_display").resizable("destroy");
+    });
+
 }
 
 function load_image() {
@@ -31,15 +35,16 @@ function show_image() {
         img.width = 100;
         img.height = 100;
 
-        //$('#image_display').draggable({ containment: ".jumbotron" });		
+        //$('#image_display').draggable({ containment: ".jumbotron" });
         $("#image_display").empty();
         $("#image_display").append(img);
         $(function() {
             $("#image_display").resizable({
-                containment: ".col-sm-9"
+                containment: ".col-sm-9",
+                aspectRatio: true
             });
         });
-        $('#image').resize(function() {
+        $('#image_display').resize(function() {
             $(this).find("#ddd").css("width", "100%");
             $(this).find("#ddd").css("height", "100%");
         });
@@ -86,14 +91,6 @@ function GetCoordinates(e) {
 
 
 /*
-$(document).ready(function(){
-    $("button").click(function(){
-        $("#reset").location.reload(true);
-    });
-});
-
-
-
 function load(){
 	var xhttp;
 	if(window.XMLHttpRequest){
@@ -109,5 +106,4 @@ function load(){
 	xhttp.open("GET", "dlaajaxa.txt", true);
 	xhttp.send();
 }
-
 */

@@ -1,11 +1,11 @@
-body{	
+body{
 	padding-top: 60px;
 }
 
 #image_display{
 	//margin-top: 100px;
 
-	border: 1px solid #8AC007;
+	//border: 1px solid #8AC007;
 }
 
 .btn-file {
@@ -35,7 +35,7 @@ body{
 	width: 90%;
 }
 .button-margin{
-	padding-left: 10px; 
+	padding-left: 10px;
 }
 .list-group{
 	overflow-x: scroll;
@@ -49,11 +49,12 @@ body{
 
 #image-display{
 	width: 100%;
+	resize: none;
 }
 
 .button_aligned{
 	 vertical-align: center;
- }
+ }S
 /*
 #image-display{
 	display: block;
