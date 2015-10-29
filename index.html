@@ -48,45 +48,70 @@
                 <div id="y" class="box"></div>
                 <br>
             </p>
+            <!-- llllllllllll -->
+            <div id="controls">
+              <p>
+
+                <input type="text" id="amount" readonly style="border:0; color:gray; font-weight:bold;">
+              </p>
+              <div id="slider"></div>
+            </div>
+            <!-- llllllllllll -->
+
             <div class="mini-layout fluid">
                 <div class="inline1 col-sm-3">
-                    <ul class="well list-group" id="data-list-group">
+                    <p class="text-success">Coordinates of green points:</p>
+                    <ul class="well list-group" id="data-list-group1">
+
+                    </ul>
+                    <p class="text-danger">Coordinates of red points:</p>
+                    <ul class="well list-group" id="data-list-group2">
 
                     </ul>
                 </div>
+
                 <form name="image" id="image" enctype="multipart/form-data" action="" method="post" class="col-sm-9">
+                    <p class="text-success">Some content:</p>
                     <div class="well" id="info">
                         Współrzędna X:
                         <br> Współrzędna Y:
                     </div>
-                    <div id="image_display"></div>
 
+                    <div id="image_display">
+
+                    </div>
+                    <img id="sd" src="http://placehold.it/400x400" />
                     <script type="text/javascript">
                     <!--
-                    var myImg = document.getElementById("image_display");
-                    myImg.onmousemove = GetCoordinates;
-                    $(document).ready(function() {
-
-                        $("#image_display").dblclick(function() {
-                            document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
+                    $(function() {
+                        $( "#slider" ).slider({
+                          orientation: "vertical",
+                          range: "min",
+                          min: 0,
+                          max: 100,
+                          value: 60,
+                          slide: function( event, ui ) {
+                            $( "#amount" ).val( ui.value );
+                            changeBrightness();
+                          }
                         });
-                    });
+                        $( "#amount" ).val( $( "#slider" ).slider( "value" ) );
+                      });
 
-                    $('img').change(function() {
+                      var myImg = document.getElementById('image_display');
 
-                        var u = URL.createObjectURL(this.files[0]);
-                        var img = new Image;
+                      myImg.onmousemove = GetCoordinates;
 
-                        img.onload = function() {
-                            alert(img.width + " " + img.height);
-                        };
-
-                        img.src = u;
-
-                    });
-                    //-->
+                      $(document).ready(function() {
+                          $("#image_display").dblclick(function() {
+                            if(lock_flag === true){
+                              document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
+                            }
+                          });
+                      });
                     </script>
                     <div class="container_for_image" style="height: 100%"></div>
+
             </div>
         </div>
     </div>

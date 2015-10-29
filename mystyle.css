@@ -50,11 +50,25 @@ body{
 #image-display{
 	width: 100%;
 	resize: none;
+
 }
 
 .button_aligned{
 	 vertical-align: center;
- }S
+ }
+#controls{
+	width: 100%;
+	background: gray;
+	display:block;
+}
+#slider{
+	margin-top: 20px;
+	margin-left: 1%;
+	display:inline-block;
+}
+#ddd{
+
+}
 /*
 #image-display{
 	display: block;
