@@ -5,6 +5,7 @@ var lock_flag = false;//CHECKS IF THE IMAGE IS BLOCKED AFTER SETTING CORRECT DIM
 
 $(window).load(function() {
     $("#lock_button").hide();
+    $("#reset_filters").hide();
     $(".jumbotron").height(1.5 * $(".jumbotron").width());
     $("#image_display").width(150).height(100);
     $(".list-group").height(300);
@@ -25,11 +26,11 @@ function initialize_app() {
       changeBrightness_Contrast();
     });
 
-    $('#image_display').on('contextmenu', function (evt) {
-      evt.preventDefault();//BLOCKS CONTEXTMENU APPEARING WHEM RIGHT CLICK
+    $('#image_display').on('contextmenu', function (evt) {//BLOCKS CONTEXTMENU APPEARING WHEM RIGHT CLICK
+      evt.preventDefault();
     });
 
-    $("#image_display").mouseup(function(evt){
+    $("#image_display").mouseup(function(evt){//DOUBLE CLICK RMB HANDLNG MACHINERY
       if(evt.which === 3){//CHECKING IF RIGHT MOUSE BUTTON WAS PRESSED
         if (evt.originalEvent.detail === 2){
           if(lock_flag === true){
@@ -40,6 +41,13 @@ function initialize_app() {
       }
     });
 
+    $("#reset_filters").click(function(){//RESETS IMAGE FILTERS AFTER CLICKING "RESET FILTERS BUTTON"
+      $('#slider').slider('value', 100);
+      $( "#amount" ).val( $( "#slider" ).slider( "value" ) );
+      $('#slider2').slider('value', 100);
+      $( "#amount2" ).val( $( "#slider2" ).slider( "value" ) );
+      changeBrightness_Contrast();
+    });
 
 }
 function changeBrightness_Contrast(){
@@ -77,7 +85,9 @@ function show_image() {
     if (load_image() != null) {
         $("#span_button").hide();
         $("#show_image_button").hide();
+        $("#reset_filters").show();
         $("#lock_button").show();
+
         imag = document.createElement('img');
         imag.id = 'ddd';
         imag.src = "images/" + load_image();
