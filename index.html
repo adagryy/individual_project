@@ -53,8 +53,10 @@
               <p>
 
                 <input type="text" id="amount" readonly style="border:0; color:gray; font-weight:bold;">
+                <input type="text" id="amount2" readonly style="border:0; color:gray; font-weight:bold;">
               </p>
-              <div id="slider"></div>
+              <div id="slider" class="sliders"></div>
+              <div id="slider2" class="sliders"></div>
             </div>
             <!-- llllllllllll -->
 
@@ -80,7 +82,7 @@
                     <div id="image_display">
 
                     </div>
-                    <img id="sd" src="http://placehold.it/400x400" />
+
                     <script type="text/javascript">
                     <!--
                     $(function() {
@@ -88,15 +90,30 @@
                           orientation: "vertical",
                           range: "min",
                           min: 0,
-                          max: 100,
-                          value: 60,
+                          max: 300,
+                          value: 100,
                           slide: function( event, ui ) {
                             $( "#amount" ).val( ui.value );
-                            changeBrightness();
+                            changeBrightness_Contrast();
                           }
                         });
-                        $( "#amount" ).val( $( "#slider" ).slider( "value" ) );
+                        $( "#amount" ).val( $( "#slider" ).slider( "value" ) ); //inserts the beginning value of the slider
                       });
+
+                      $(function() {
+                          $( "#slider2" ).slider({
+                            orientation: "vertical",
+                            range: "min",
+                            min: 0,
+                            max: 300,
+                            value: 100,
+                            slide: function( event, ui ) {
+                              $( "#amount2" ).val( ui.value );
+                              changeBrightness_Contrast();
+                            }
+                          });
+                          $( "#amount2" ).val( $( "#slider2" ).slider( "value" ) );//inserts the beginning value of the slider
+                        });
 
                       var myImg = document.getElementById('image_display');
 

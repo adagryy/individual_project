@@ -22,6 +22,7 @@ function initialize_app() {
       lock_flag = true;
       $("#lock_button").hide();
       $("#image_display").resizable("destroy");
+      changeBrightness_Contrast();
     });
 
     $('#image_display').on('contextmenu', function (evt) {
@@ -41,20 +42,30 @@ function initialize_app() {
 
 
 }
-function changeBrightness(){
-  var brightness = document.getElementById('ddd'),
-      val        = parseInt($( "#slider" ).slider( "value" ));
-      console.log(val);
-      if (val > 100 || val < -50)
-        return false;
-        console.log(val);
+function changeBrightness_Contrast(){
+  if(lock_flag === true){
+        var brightness = document.getElementById('ddd'),
+        brightnessval  = parseInt($( "#slider" ).slider( "value" ));
+        var contrast  = document.getElementById('ddd'),
+        contrastval           = parseInt($( "#slider2" ).slider( "value" ));
+        //console.log(val);
+        // if (val > 201 || val < -50)
+        //   return false;
+        //console.log(val);
         //brightness.style.brightness((val + 50)/100);
         //brightness.style.backgroundColor = val > 0 ? 'white' : 'black';
         //$("#sd").css({backgroundColor: 'black'});
-        var q = "brightness(" + String(val) + "%)"
-        console.log(q);
-        brightness.style.WebkitFilter = q;
+        //var q = "brightness(" + String(val) + "%)"
+        //console.log(q);
+        //console.log(brightnessval, val, "brightness(" + String(brightnessval) + "%)" + " contrast(" + String(val) + "%)");
+
+        //contrast.style.WebkitFilter = "contrast(" + String(val) + "%)";
+        brightness.style.WebkitFilter = "brightness(" + String(brightnessval) + "%)" + " contrast(" + String(contrastval) + "%)";//changes both brightness and contrast in the same time
+                                                                                                                                 //i.e: "brightness(154%) contrast(172%)" - exemplary set describing bringtness and contrast
+
+      }
 }
+
 function load_image() {
     var filename = null;
     filename = $('input[type=file]').val().split('\\').pop();
@@ -87,6 +98,7 @@ function show_image() {
         //$('#image_display').draggable({ containment: ".jumbotron" });
         $("#image_display").empty();
         $("#image_display").append(imag);
+
         $(function() {
             $("#image_display").resizable({
                 containment: ".col-sm-9",
@@ -97,6 +109,7 @@ function show_image() {
             $(this).find("#ddd").css("width", "100%");
             $(this).find("#ddd").css("height", "100%");
         });
+
     }
 }
 

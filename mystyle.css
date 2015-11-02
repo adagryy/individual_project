@@ -66,8 +66,8 @@ body{
 	margin-left: 1%;
 	display:inline-block;
 }
-#ddd{
-
+.sliders{
+	display: inline-block;
 }
 /*
 #image-display{
