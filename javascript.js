@@ -49,10 +49,10 @@ function load_image() {
     return filename == '' ? null : filename;
 }
 
-function getMeta() {
+function getMeta() {//FETCHES NATURAL DIMENSIONS OF AN IMAGE FROM SERVER, 
     var url = "images/" + load_image()
     var img = new Image();
-    img.onload = function() {
+    img.onload = function() {//THIS ONLOAD METHOD IS THE REASON OF USING SETIMEOUT() METHOD TO DELAY PROGRAM IN ORDER TO WAITING IMAGE RESOLUTION.
         realWidth = this.width;
         realHeight = this.height;
     };
@@ -81,7 +81,7 @@ function show_image() {
         imag.src = "images/" + load_image();
         getMeta();
 
-        setTimeout(function() {
+        setTimeout(function() {//DELAY (WAITING FOR IMAGE DIMENSIONS)
             if (realWidth > 1000) {
                 imag.width = Math.round(realWidth / 3);
                 imag.height = Math.round(realHeight / 3);
