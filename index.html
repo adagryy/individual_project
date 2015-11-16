@@ -24,6 +24,7 @@
                         Choose file...<input  type="file" name="img" accept=".png, .jpg, .jpeg" />
                         </span>
         <button class="btn btn-primary" type="button" id="show_image_button" onclick="show_image()"> Wyświetl plik</button>
+        <!-- <button class="btn btn-primary" type="button" id="show_image_button2" onclick="getMeta()"> Wymiary</button> -->
         </file></div>
     </header>
     <div class="container-fluid">
@@ -80,9 +81,9 @@
                         <br> Współrzędna Y:
                     </div>
 
-                    <div id="image_display">
-
-                    </div>
+                    <!-- <div id="image_display">
+                    	<div id="i_frame"></div>
+                    </div> -->
 
                     <script type="text/javascript">
                     <!--
@@ -116,19 +117,19 @@
                           $( "#amount2" ).val( $( "#slider2" ).slider( "value" ) );//inserts the beginning value of the slider
                         });
 
-                      var myImg = document.getElementById('image_display');
+                      // var myImg = document.getElementById('ddd');
 
-                      myImg.onmousemove = GetCoordinates;
+                      // myImg.onmousemove = GetCoordinates;
 
-                      $(document).ready(function() {
-                          $("#image_display").dblclick(function() {
-                            if(lock_flag === true){
-                              document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
-                            }
-                          });
-                      });
+                      // $(document).ready(function() {
+                      //     $("#ddd").dblclick(function() {
+                      //       if(lock_flag === true){
+                      //         document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
+                      //       }
+                      //     });
+                      // });
                     </script>
-                    <div class="container_for_image" style="height: 100%"></div>
+                    <!-- <div class="container_for_image" style="height: 100%"></div> -->
 
             </div>
         </div>

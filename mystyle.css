@@ -69,16 +69,7 @@ body{
 .sliders{
 	display: inline-block;
 }
-/*
-#image-display{
-	display: block;
-    width: auto;
-    //max-width: 75%;
+#i_frame{
+	border-style: solid;
+    border-color: red;
 }
-
-
-
-
-
-}
-*/
