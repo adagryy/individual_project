@@ -1,4 +1,4 @@
-var xx, yy; //COORDINATES ON THE PICTURE POINTED BY POINTER
+var xx, yy, axx, ayy; //COORDINATES ON THE PICTURE POINTED BY POINTER
 
 var realWidth = 0,
     realHeight = 0; //REAL DIMENSIONS OF PICTURE IMPORTED FROM SERVER.
@@ -20,6 +20,9 @@ function initialize_app() {
         lock_flag = true;
         $("#lock_button").hide();
         $("#ddd").resizable("destroy");
+
+        wheelzoom(document.querySelector('img#ddd')); //ZOOMING BY SCROOL
+
         changeBrightness_Contrast();
     });
     $("#reset_filters").click(function() { //RESETS IMAGE FILTERS AFTER CLICKING "RESET FILTERS BUTTON"
@@ -43,16 +46,33 @@ function changeBrightness_Contrast() {
     }
 }
 
+function calculateZoomCoordinates() {   
+
+    var backgroundPosX = Math.round(Math.abs(parseInt($("#ddd").css('backgroundPosition-x').replace("px", ""))));
+    var backgroundPosY = Math.abs(parseInt($("#ddd").css('backgroundPosition-y').replace("px", "")));
+
+    var backgroundSize = $("#ddd").css('backgroundSize').split(" ");
+
+    var backgroundSizeX = parseInt(backgroundSize[0].replace("px", ""));
+    var backgroundSizeY = parseInt(backgroundSize[1].replace("px", ""));
+    
+    xx = Math.round((backgroundPosX + axx) / backgroundSizeX * realWidth);
+    yy = Math.round((backgroundPosY + ayy) / backgroundSizeY * realHeight);
+
+    document.getElementById("x").innerHTML = xx;
+    document.getElementById("y").innerHTML = yy;
+}
+
 function load_image() {
     var filename = null;
     filename = $('input[type=file]').val().split('\\').pop();
     return filename == '' ? null : filename;
 }
 
-function getMeta() {//FETCHES NATURAL DIMENSIONS OF AN IMAGE FROM SERVER, 
+function getMeta() { //FETCHES NATURAL DIMENSIONS OF AN IMAGE FROM SERVER, 
     var url = "images/" + load_image()
     var img = new Image();
-    img.onload = function() {//THIS ONLOAD METHOD IS THE REASON OF USING SETIMEOUT() METHOD TO DELAY PROGRAM IN ORDER TO WAITING IMAGE RESOLUTION.
+    img.onload = function() { //THIS ONLOAD METHOD IS THE REASON OF USING SETIMEOUT() METHOD TO DELAY PROGRAM IN ORDER TO WAITING IMAGE RESOLUTION.
         realWidth = this.width;
         realHeight = this.height;
     };
@@ -81,7 +101,7 @@ function show_image() {
         imag.src = "images/" + load_image();
         getMeta();
 
-        setTimeout(function() {//DELAY (WAITING FOR IMAGE DIMENSIONS)
+        setTimeout(function() { //DELAY (WAITING FOR IMAGE DIMENSIONS)
             if (realWidth > 1000) {
                 imag.width = Math.round(realWidth / 3);
                 imag.height = Math.round(realHeight / 3);
@@ -168,10 +188,12 @@ function GetCoordinates(myImg) {
         var img_width = document.getElementById("ddd").width;
         var img_height = document.getElementById("ddd").height;
 
-        xx = Math.round(PosX / img_width * realWidth);//SCALING TO DIMENSIONS OF ORIGINAL IMAGE
+        axx = PosX;
+        ayy = PosY;
+
+        xx = Math.round(PosX / img_width * realWidth); //SCALING TO DIMENSIONS OF ORIGINAL IMAGE
         yy = Math.round(PosY / img_height * realHeight);
 
-        document.getElementById("x").innerHTML = xx;
-        document.getElementById("y").innerHTML = yy;
+        calculateZoomCoordinates();
     }
 }
