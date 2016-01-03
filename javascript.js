@@ -9,6 +9,13 @@ var canvas, ctx;
 
 var imag;
 
+var scalerX, scalerY;
+
+var tabX = [];
+var tabY = [];
+var tabColor = [];
+var count = 0;
+
 $(window).load(function() {
     $("#lock_button").hide();
     $("#reset_filters").hide();
@@ -22,7 +29,7 @@ function initialize_app() {
     $("#lock_button").click(function() { //BLOCKS RESIZING AFTER FITTING THE CORRECT IMAGE DIMENSIONS BY HAND
         lock_flag = true;
         $("#lock_button").hide();
-        $("#ddd").resizable("destroy");
+        $("#myCanvas").resizable("destroy");
 
         // wheelzoom(document.querySelectorAll('#myCanvas')); //ZOOMING BY SCROOL
 
@@ -40,7 +47,7 @@ function initialize_app() {
 
 function changeBrightness_Contrast() {
     if (lock_flag === true) {
-        var brightness = document.getElementById('ddd'),
+        var brightness = document.getElementById('myCanvas'),
             brightnessval = parseInt($("#slider").slider("value"));
         var contrast = document.getElementById('ddd'),
             contrastval = parseInt($("#slider2").slider("value"));
@@ -52,30 +59,7 @@ function changeBrightness_Contrast() {
     }
 }
 
-function calculateZoomCoordinates() {
 
-    var position = $("#ddd").css('backgroundPosition').split(" ");
-
-    var backgroundPosX = Math.abs(parseInt(position[0].replace("px", "")));
-    var backgroundPosY = Math.abs(parseInt(position[1].replace("px", "")));
-    // var backgroundPosX = Math.abs(parseInt($("#ddd").css('backgroundPosition-x').replace("px", "")));
-    // var backgroundPosY = Math.abs(parseInt($("#ddd").css('backgroundPosition-y').replace("px", "")));
-
-    var backgroundSize = $("#ddd").css('backgroundSize').split(" ");
-
-    //console.log(backgroundSize);
-
-    var backgroundSizeX = parseInt(backgroundSize[0].replace("px", ""));
-    var backgroundSizeY = 10000; //parseInt(backgroundSize[1].replace("px", ""));
-
-    xx = Math.round((backgroundPosX + axx) / backgroundSizeX * realWidth);
-    yy = Math.round((backgroundPosY + ayy) / backgroundSizeY * realHeight);
-
-    //console.log(backgroundPosX + " " + backgroundPosY);
-
-    document.getElementById("x").innerHTML = xx;
-    document.getElementById("y").innerHTML = yy;
-}
 
 function load_image() {
     var filename = null;
@@ -132,20 +116,28 @@ function show_image() {
 
         setTimeout(function() { //DELAY (WAITING FOR IMAGE DIMENSIONS)
             if (realWidth > 1000) {
-                ctx.canvas.width = realWidth / 3;
-                ctx.canvas.height = realHeight / 3;
+                scalerX = realWidth / 3;
+                scalerY = realHeight / 3;
+                ctx.canvas.width = scalerX;
+                ctx.canvas.height = scalerY;
+                imag.width = scalerX;
+                imag.height = scalerY;
                 //ctx.drawImage(imag, 0, 0, realWidth / 3, realHeight / 3);
                 //imag.onload = function(){
-                ctx.drawImage(imag, 0, 0, realWidth / 3, realHeight / 3);
+                ctx.drawImage(imag, 0, 0, scalerX, scalerY);
                 //}
                 // imag.width = Math.round(realWidth / 3);
                 // imag.height = Math.round(realHeight / 3);
 
             } else {
-                ctx.canvas.width = realWidth;
-                ctx.canvas.height = realHeight;
+                scalerX = realWidth;
+                scalerY = realHeight;
+                ctx.canvas.width = scalerX;
+                ctx.canvas.height = scalerY;
+                imag.width = scalerX;
+                imag.height = scalerY;
                 //imag.onload = function(){
-                ctx.drawImage(imag, 0, 0, realWidth, realHeight);
+                ctx.drawImage(imag, 0, 0, scalerX, scalerY);
                 //}
                 // imag.width = realWidth;
                 // imag.height = realHeight;
@@ -156,32 +148,32 @@ function show_image() {
             //ctx.drawImage(imag, 0, 0, realWidth, realHeight);
 
             $(function() {
-                $("#ddd").resizable({
+                $("#myCanvas").resizable({
                     containment: ".col-sm-9",
                     aspectRatio: true
+
                 });
             });
 
-            $('#ddd').on("mousemove", function(event) {
-                var myImg = document.getElementById('ddd');
-                console.log("move detected");
+            $('#myCanvas').on("mousemove", function(event) {
+                var myImg = document.getElementById('myCanvas');
                 GetCoordinates(myImg);
             });
 
-            $('#ddd').on("mousewheel", function(event) {
-                console.log(getMousePos(canvas, event));
-            });
+            // $('#myCanvas').on("mousewheel", function(event) {
+            //     console.log(getMousePos(canvas, event));
+            // });
 
-            $('#ddd').on("mousemove", function(event) {
-                var myImg = document.getElementById('ddd');
+            $('#myCanvas').on("mousemove", function(event) {
+                var myImg = document.getElementById('myCanvas');
                 GetCoordinates(myImg);
             });
 
-            $('ddd').on('contextmenu', function(evt) { //BLOCKS CONTEXTMENU APPEARING WHEM RIGHT CLICK
+            $('#myCanvas').on('contextmenu', function(evt) { //BLOCKS CONTEXTMENU APPEARING WHEM RIGHT CLICK
                 evt.preventDefault();
             });
 
-            $("#ddd").mouseup(function(evt) { //DOUBLE CLICK RMB HANDLNG MACHINERY
+            $("#myCanvas").mouseup(function(evt) { //DOUBLE CLICK RMB HANDLNG MACHINERY
                 if (evt.which === 3) { //CHECKING IF RIGHT MOUSE BUTTON WAS PRESSED
                     if (evt.originalEvent.detail === 2) {
                         if (lock_flag === true) {
@@ -192,24 +184,24 @@ function show_image() {
                 }
             });
 
-            $("#ddd").dblclick(function() { //IT TYPES COORDINATES TO THE TABLE
-                if (lock_flag === true)
-                    $("#data-list-group1").append("X: " + String(xx) + " Y: " + String(yy) + "<br>");
-                document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
-            });
+            // $("#myCanvas").dblclick(function() { //IT TYPES COORDINATES TO THE TABLE
+            //     if (lock_flag === true)
+            //         $("#data-list-group1").append("X: " + String(xx) + " Y: " + String(yy) + "<br>");
+            //     document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
+            // });
             // var galaxy = new CanvasZoom( document.getElementById('myCanvas'), "images/",  1500,  1000 );
-            changeBrightness_Contrast();
-            init_canvas();
-        }, 100);
 
+
+        }, 100);
+        init_canvas();
     }
 
 }
 
-function rerender() {
-    var canvas = document.getElementById('myCanvas');
+// function rerender() {
+//     var canvas = document.getElementById('myCanvas');
 
-}
+// }
 
 function reload_page() {
     location.reload();
@@ -245,8 +237,8 @@ function GetCoordinates(myImg) {
         PosX = PosX - ImgPos[0];
         PosY = PosY - ImgPos[1];
 
-        var img_width = document.getElementById("ddd").width;
-        var img_height = document.getElementById("ddd").height;
+        var img_width = document.getElementById("myCanvas").width;
+        var img_height = document.getElementById("myCanvas").height;
 
         axx = PosX;
         ayy = PosY;
@@ -258,6 +250,22 @@ function GetCoordinates(myImg) {
     }
 }
 
+function calculateZoomCoordinates() {
+
+    // var position = $("#ddd").css('backgroundPosition').split(" ");
+
+    // var backgroundPosX = Math.abs(parseInt(position[0].replace("px", "")));
+    // var backgroundPosY = Math.abs(parseInt(position[1].replace("px", "")));
+    // var backgroundPosX = Math.abs(parseInt($("#ddd").css('backgroundPosition-x').replace("px", "")));
+    // var backgroundPosY = Math.abs(parseInt($("#ddd").css('backgroundPosition-y').replace("px", "")));
+
+
+    //console.log(backgroundPosX + " " + backgroundPosY);
+
+    // document.getElementById("x").innerHTML = xx;
+    // document.getElementById("y").innerHTML = yy;
+}
+
 
 //===================================================================================================
 function redraw() {
@@ -266,7 +274,7 @@ function redraw() {
     var p2 = ctx.transformedPoint(canvas.width, canvas.height);
     ctx.clearRect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
 
-    ctx.drawImage(imag, 0, 0, realWidth / 3, realHeight / 3);
+    ctx.drawImage(imag, 0, 0, scalerX, scalerY);
 
     // Alternatively:
     // ctx.save();
@@ -319,8 +327,8 @@ function redraw() {
 
 function init_canvas() {
     canvas = document.getElementsByTagName('canvas')[0];
-    canvas.width = 800;
-    canvas.height = 600;
+    // canvas.width = 800;
+    // canvas.height = 600;
     ctx = canvas.getContext('2d');
     trackTransforms(ctx);
 
@@ -333,17 +341,21 @@ function init_canvas() {
         document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
         lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
         lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
-        // console.log(lastX + ", " + lastY);
+        //console.log(lastX + ", " + lastY);
         dragStart = ctx.transformedPoint(lastX, lastY);
         dragged = false;
     }, false);
     canvas.addEventListener('mousemove', function(evt) {
-        lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
-        lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
+        lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft); ///////////////////////////////////////////////////////////////////////////////////////
+        lastY = evt.offsetY || (evt.pageY - canvas.offsetTop); ///////////////////////////////////////////////////////////////////////////////////////
+        document.getElementById("x").innerHTML = (lastX / canvas.width) * realWidth;
+        document.getElementById("y").innerHTML = (lastY / canvas.height) * realHeight;
         dragged = true;
         if (dragStart) {
-            var pt = ctx.transformedPoint(lastX, lastY);
+            var pt = ctx.transformedPoint(lastX, lastY); ///////////////////////////////////////////////////////////////////////////////////////
+            //console.log((pt.x) + ", " + (pt.y)) ///////////////////////////////////////////////////////////////////////////////////////
             ctx.translate(pt.x - dragStart.x, pt.y - dragStart.y);
+
             redraw();
         }
     }, false);
@@ -352,7 +364,12 @@ function init_canvas() {
         if (!dragged) zoom(evt.shiftKey ? -1 : 1);
     }, false);
 
-    var scaleFactor = 1.1;
+    // canvas.addEventListener('dblclick', function(evt) {
+    //     document.getElementById("x").innerHTML = canvas.width;
+    //     document.getElementById("y").innerHTML = yy;
+    // });
+
+    var scaleFactor = 1.01;
     var zoom = function(clicks) {
         var pt = ctx.transformedPoint(lastX, lastY);
         ctx.translate(pt.x, pt.y);
@@ -363,7 +380,7 @@ function init_canvas() {
     }
 
     var handleScroll = function(evt) {
-        console.log("handled");
+        //console.log("handled");
         var delta = evt.wheelDelta ? evt.wheelDelta / 40 : evt.detail ? -evt.detail : 0;
         if (delta) zoom(delta);
         return evt.preventDefault() && false;
@@ -371,17 +388,69 @@ function init_canvas() {
 
     canvas.addEventListener('DOMMouseScroll', handleScroll, false);
     canvas.addEventListener('mousewheel', handleScroll, false);
-    canvas.addEventListener("click", function() {
+    canvas.addEventListener("mousewheel", function() {
+        redraw();
         ctx.beginPath();
-        ctx.fillRect(10,15,3,3);
-        // ctx.moveTo(20, 20);
-        // ctx.lineTo(20, 100);
-        // ctx.lineTo(70, 100);
-        ctx.fillStyle = "white";
-        ctx.stroke();
+        
+        for (i = 0; i < count; i++) {
+            if (tabColor[i] == "green") {
+                // ctx.fillRect(parseInt(tabX[i]), parseInt(tabY[i]), 30, 30);
+                ctx.fillRect(tabX[i]-2, tabY[i]-2, 4, 4);
+                console.log(tabX[i] + ", " + tabY[i] + ", " + tabColor[i]);
+            } else {
 
-        console.log("sdf");
+            }
+        }
+        ctx.fillStyle = "yellow";
+        ctx.stroke();
+        // ctx.beginPath();
+        // ctx.fillRect(canvas.width - 3, 15, 3, 3);
+        // ctx.fillRect(0, 0, 3, 3);
+        // ctx.fillRect(220, 110, 30, 30);
+        // ctx.fillRect(tabX[1], tabY[1], 30, 30);
+        // ctx.fillRect(tabX[2], tabY[2], 30, 30);
+        // // ctx.moveTo(20, 20);
+        // // ctx.lineTo(20, 100);
+        // // ctx.lineTo(70, 100);
+        // ctx.fillStyle = "yellow";
+        // ctx.stroke();
+
+        //console.log(canvas.width);
     });
+
+    canvas.addEventListener("dblclick", function(evt) {
+        var X = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+        var Y = evt.offsetY || (evt.pageY - canvas.offsetTop);
+        var pt = ctx.transformedPoint(X, Y);
+        var xCoor = Math.round((pt.x / canvas.width) * realWidth);
+        var yCoor = Math.round((pt.y / canvas.height) * realHeight);
+        tabX.push(pt.x);
+        tabY.push(pt.y);
+        tabColor.push("green");
+        count++;
+        // document.getElementById("x").innerHTML = String(xCoor);
+        // document.getElementById("y").innerHTML = String(yCoor);
+        draw_points();
+        $("#data-list-group1").append("X: " + String(xCoor) + " Y: " + String(yCoor) + "<br>");
+        document.getElementById("info").innerHTML = "Współrzędna X: " + String(xCoor) + "<br> Współrzędna Y: " + String(yCoor);
+        //console.log(xCoor + ", " + yCoor);
+        //console.log(canvas.width + ", " + canvas.height);
+    });
+}
+
+function draw_points() {
+    redraw();
+    ctx.beginPath();
+    for (i = 0; i < count; i++) {
+        if (tabColor[i] == "green") {
+            ctx.fillRect(tabX[i]-2, tabY[i]-2, 4, 4);
+            console.log(tabX[i] + ", " + tabY[i] + ", " + tabColor[i]);
+        } else {
+
+        }
+    }
+    ctx.fillStyle = "yellow";
+    ctx.stroke();
 }
 
 function trackTransforms(ctx) {
