@@ -13,37 +13,40 @@
     <title>Doctors supporting app</title>
 </head>
 <script src="javascript.js"></script>
-<script src="wheelzoom.js"></script>
+<!-- <script src="wheelzoom.js"></script>
+<script type="text/javascript" src="imageloader.js"></script>
+<script type="text/javascript" src="canvaszoom.js"></script> -->
+
+<!-- <script src="canvasrescale.js"></script> -->
 
 <body>
     <header class="navbar navbar-fixed-top navbar-inverse">
         <div class="button_aligned">
             <button class="btn btn-danger" type="button" id="reset" onclick="reload_page()">Reset application</button>
 
-        <span class="btn btn-primary btn-file" id="span_button">
+            <span class="btn btn-primary btn-file" id="span_button">
                         Choose file...<input  type="file" name="img" accept=".png, .jpg, .jpeg" />
                         </span>
-        <button class="btn btn-primary" type="button" id="show_image_button" onclick="show_image()"> Wyświetl plik</button>
-        <!-- <button class="btn btn-primary" type="button" id="show_image_button2" onclick="getMeta()"> Wymiary</button> -->
-        </file></div>
+            <button class="btn btn-primary" type="button" id="show_image_button" onclick="show_image()"> Wyświetl plik</button>
+            <!-- <button class="btn btn-primary" type="button" id="show_image_button2" onclick="getMeta()"> Wymiary</button> -->
+            </file>
+        </div>
     </header>
     <div class="container-fluid">
         <div class="jumbotron">
             <div class="dropdown">
-
                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Export data...
                     <span class="caret"></span></button>
-                    <button id="reset_filters" class="btn btn-danger" type="button">Reset filters
+                <button id="reset_filters" class="btn btn-danger" type="button">Reset filters
                     <button class="btn btn-info" type="button" id="lock_button">Start marking</button>
-                <ul class="dropdown-menu">
-                    <li class="button-margin">
-                        <button type="button" class="btn btn-info">Excel</button>
-                    </li>
-                    <li><a href="#">Matlab</a></li>
-                    <li><a href="#">CSV</a></li>
-                </ul>
+                    <ul class="dropdown-menu">
+                        <li class="button-margin">
+                            <button type="button" class="btn btn-info">Excel</button>
+                        </li>
+                        <li><a href="#">Matlab</a></li>
+                        <li><a href="#">CSV</a></li>
+                    </ul>
             </div>
-
             <p>
                 <div class="box">X:</div>
                 <div id="x" class="box"> </div>
@@ -53,70 +56,169 @@
             </p>
             <!-- llllllllllll -->
             <div id="controls">
-              <p>
-                <input type="text" id="amount" readonly style="border:0; color:gray; font-weight:bold;">
-                <input type="text" id="amount2" readonly style="border:0; color:gray; font-weight:bold;">
-              </p>
-              <div id="slider" class="sliders"></div>
-              <div id="slider2" class="sliders"></div>
+                <p>
+                    <input type="text" id="amount" readonly style="border:0; color:gray; font-weight:bold;">
+                    <input type="text" id="amount2" readonly style="border:0; color:gray; font-weight:bold;">
+                </p>
+                <div id="slider" class="sliders"></div>
+                <div id="slider2" class="sliders"></div>
             </div>
             <!-- llllllllllll -->
-
             <div class="mini-layout fluid">
                 <div class="inline1 col-sm-3">
                     <p class="text-success">Coordinates of green points:</p>
                     <ul class="well list-group" id="data-list-group1">
-
                     </ul>
                     <p class="text-danger">Coordinates of red points:</p>
                     <ul class="well list-group" id="data-list-group2">
-
                     </ul>
                 </div>
-
                 <form name="image" id="image" enctype="multipart/form-data" action="" method="post" class="col-sm-9">
                     <p class="text-success">Some content:</p>
                     <div class="well" id="info">
                         Współrzędna X:
                         <br> Współrzędna Y:
                     </div>
-
                     <script type="text/javascript">
-                    <!--
                     $(function() {
-                        $( "#slider" ).slider({
-                          orientation: "vertical",
-                          range: "min",
-                          min: 0,
-                          max: 300,
-                          value: 100,
-                          slide: function( event, ui ) {
-                            $( "#amount" ).val( ui.value );
-                            changeBrightness_Contrast();
-                          }
-                        });
-                        $( "#amount" ).val( $( "#slider" ).slider( "value" ) ); //inserts the beginning value of the slider
-                      });
-
-                      $(function() {
-                          $( "#slider2" ).slider({
+                        $("#slider").slider({
                             orientation: "vertical",
                             range: "min",
                             min: 0,
                             max: 300,
                             value: 100,
-                            slide: function( event, ui ) {
-                              $( "#amount2" ).val( ui.value );
-                              changeBrightness_Contrast();
+                            slide: function(event, ui) {
+                                $("#amount").val(ui.value);
+                                changeBrightness_Contrast();
                             }
-                          });
-                          $( "#amount2" ).val( $( "#slider2" ).slider( "value" ) );//inserts the beginning value of the slider
                         });
-
-                    
-
+                        $("#amount").val($("#slider").slider("value")); //inserts the beginning value of the slider
+                    });
+                    $(function() {
+                        $("#slider2").slider({
+                            orientation: "vertical",
+                            range: "min",
+                            min: 0,
+                            max: 300,
+                            value: 100,
+                            slide: function(event, ui) {
+                                $("#amount2").val(ui.value);
+                                changeBrightness_Contrast();
+                            }
+                        });
+                        $("#amount2").val($("#slider2").slider("value")); //inserts the beginning value of the slider
+                    });
                     </script>
+                    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+                    <script type="text/javascript">
+                    //         var scroll = 0;
+                    //         var scale = 1.0;
 
+
+                    //                     /** This is high-level function.
+                    //          * It must react to delta being more/less than zero.
+                    //          */
+                    //         function handle(delta) {
+
+                    //                 var canvas = document.getElementById("myCanvas");
+                    //                 var ctx = canvas.getContext("2d");
+
+                    //                 scroll = delta;
+                    //                 if(scroll > 0)
+                    //                 {
+                    //                     scale += 0.2;
+                    //                 }
+                    //                 if(scroll < 0)
+                    //                 {
+                    //                     scale -= 0.2;
+                    //                 }
+
+
+                    //         }
+
+                    //         /** Event handler for mouse wheel event.
+                    //          */
+                    //         function wheel(event){
+                    //                 var delta = 0;
+                    //                 if (!event) /* For IE. */
+                    //                         event = window.event;
+                    //                 if (event.wheelDelta) { /* IE/Opera. */
+                    //                         delta = event.wheelDelta/120;
+                    //                 } else if (event.detail) { /** Mozilla case. */
+                    //                         /** In Mozilla, sign of delta is different than in IE.
+                    //                          * Also, delta is multiple of 3.
+                    //                          */
+                    //                         delta = -event.detail/3;
+                    //                 }
+                    //                 /** If delta is nonzero, handle it.
+                    //                  * Basically, delta is now positive if wheel was scrolled up,
+                    //                  * and negative, if wheel was scrolled down.
+                    //                  */
+                    //                 if (delta)
+                    //                         handle(delta);
+                    //                 /** Prevent default actions caused by mouse wheel.
+                    //                  * That might be ugly, but we handle scrolls somehow
+                    //                  * anyway, so don't bother here..
+                    //                  */
+                    //                 if (event.preventDefault)
+                    //                         event.preventDefault();
+                    //             event.returnValue = false;
+                    //         }
+
+                    //         /** Initialization code. 
+                    //          * If you use your own event management code, change it as required.
+                    //          */
+                    //         if (window.addEventListener)
+                    //                 /** DOMMouseScroll is for mozilla. */
+                    //                 window.addEventListener('DOMMouseScroll', wheel, false);
+                    //         /** IE/Opera. */
+                    //         window.onmousewheel = document.onmousewheel = wheel;
+
+                    //         var drawX = 0;
+                    //         var drawY = 0;
+                    //         var overX = 0;
+                    //         var overY = 0;
+
+                    //          function startCanvas()
+                    //          {
+                    //              var myCanvas = document.getElementById("myCanvas");
+                    //              var ctx = myCanvas.getContext("2d");
+                    //              ctx.canvas.width  = window.innerWidth;
+                    //              ctx.canvas.height = window.innerHeight;                 
+                    //              setInterval(draw,100);
+                    //          }
+
+                    //          function draw()
+                    //          {
+                    //             var canvas = document.getElementById("myCanvas");
+                    //             var ctx = canvas.getContext("2d");
+
+                    //             ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+                    //             ctx.save();
+                    //             ctx.scale(scale,scale);
+                    //             ctx.fillRect(drawX,drawY,20,20);
+                    //             //ctx.translate(-scale,-scale);
+                    //             ctx.restore();
+                    //             ctx.font="20pt Arial";  
+                    //             ctx.fillText(scale+":"+drawX,0,150);                
+                    //          }
+
+                    //          function canvasClick(event)
+                    //          {
+                    //             console.log(event.layerX+"/"+scale);
+                    //             drawX = event.layerX/scale;
+                    //             drawY = event.layerY/scale;
+                    //          }
+
+                    //          function canvasOver(event)
+                    //          {
+                    //             console.log("over");
+                    //             overX = event.layerX;
+                    //             overY = event.layerY;
+                    //          }
+                    </script>
+                    <!-- 
+======================================================================================== -->
             </div>
         </div>
     </div>
