@@ -13,6 +13,7 @@
     <title>Doctors supporting app</title>
 </head>
 <script src="javascript.js"></script>
+<script src="data.js"></script>
 <!-- <script src="wheelzoom.js"></script>
 <script type="text/javascript" src="imageloader.js"></script>
 <script type="text/javascript" src="canvaszoom.js"></script> -->
@@ -39,12 +40,15 @@
                     <span class="caret"></span></button>
                 <button id="reset_filters" class="btn btn-danger" type="button">Reset filters
                     <button class="btn btn-info" type="button" id="lock_button">Start marking</button>
-                    <ul class="dropdown-menu">
+                                        <ul class="dropdown-menu">
                         <li class="button-margin">
-                            <button type="button" class="btn btn-info">Excel</button>
+                            <button type="button" class="btn btn-info" onclick="save_to_csv()">CSV</button>
+                        </li>                        
+                        <li class="button-margin">
+                            <button type="button" class="btn btn-info" onclick="save_to_xls()">Excel</button>
                         </li>
                         <li><a href="#">Matlab</a></li>
-                        <li><a href="#">CSV</a></li>
+                        <!-- <li><a href="#">Excel</a></li> -->
                     </ul>
             </div>
             <p>

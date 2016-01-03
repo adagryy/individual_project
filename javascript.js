@@ -23,7 +23,16 @@ $(window).load(function() {
     $(".list-group").height(300);
     $(".col-sm-9").height(1.5 * $(".col-sm-9").width());
     initialize_app();
+    $.getScript("data.js"); //LOAD EXTERNAL "data.js" SCRIPT
 });
+
+function save_w(text1, text2) {
+    var data = new FormData();
+    data.append("data", text1 + ";" + text2 + ";");
+    var xhr = (window.XMLHttpRequest) ? new XMLHttpRequest() : new activeXObject("Microsoft.XMLHTTP");
+    xhr.open('post', 'skrypt.php', true);
+    xhr.send(data);
+}
 
 function initialize_app() {
     $("#lock_button").click(function() { //BLOCKS RESIZING AFTER FITTING THE CORRECT IMAGE DIMENSIONS BY HAND
@@ -173,16 +182,16 @@ function show_image() {
                 evt.preventDefault();
             });
 
-            $("#myCanvas").mouseup(function(evt) { //DOUBLE CLICK RMB HANDLNG MACHINERY
-                if (evt.which === 3) { //CHECKING IF RIGHT MOUSE BUTTON WAS PRESSED
-                    if (evt.originalEvent.detail === 2) {
-                        if (lock_flag === true) {
-                            $("#data-list-group2").append("X: " + String(xx) + " Y: " + String(yy) + "<br>");
-                            document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
-                        }
-                    }
-                }
-            });
+            // $("#myCanvas").mouseup(function(evt) { //DOUBLE CLICK RMB HANDLNG MACHINERY
+            //     if (evt.which === 3) { //CHECKING IF RIGHT MOUSE BUTTON WAS PRESSED
+            //         if (evt.originalEvent.detail === 2) {
+            //             if (lock_flag === true) {
+            //                 $("#data-list-group2").append("X: " + String(xx) + " Y: " + String(yy) + "<br>");
+            //                 document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
+            //             }
+            //         }
+            //     }
+            // });
 
             // $("#myCanvas").dblclick(function() { //IT TYPES COORDINATES TO THE TABLE
             //     if (lock_flag === true)
@@ -288,19 +297,20 @@ function redraw() {
     // ctx.lineWidth = 20;
     // ctx.moveTo(399, 250);
     // ctx.lineTo(474, 256);
-    ctx.stroke();
+    // ctx.stroke();
 
-    ctx.save();
-    ctx.translate(4, 2);
+    // ctx.save();
+
+    // ctx.translate(4, 2);
     // ctx.beginPath();
     // ctx.lineWidth = 10;
     // ctx.moveTo(436, 253);
     // ctx.lineTo(437.5, 233);
-    ctx.stroke();
+    // ctx.stroke();
 
-    ctx.save();
-    ctx.translate(438.5, 223);
-    ctx.strokeStyle = '#06c';
+    // ctx.save();
+    // ctx.translate(438.5, 223);
+    // ctx.strokeStyle = '#06c';
     // ctx.beginPath();
     // ctx.lineWidth = 0.05;
     // for (var i = 0; i < 60; ++i) {
@@ -309,14 +319,14 @@ function redraw() {
     //     ctx.lineTo(10, 0);
     //     ctx.rotate(-6 * i * Math.PI / 180);
     // }
-    ctx.stroke();
-    ctx.restore();
+    // ctx.stroke();
+    // ctx.restore();
 
     // ctx.beginPath();
     // ctx.lineWidth = 0.2;
     // ctx.arc(438.5, 223, 10, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.restore();
+    // ctx.stroke();
+    // ctx.restore();
 
     // ctx.drawImage(ball,379,233,40,40);
     // ctx.drawImage(ball,454,239,40,40);
@@ -346,6 +356,8 @@ function init_canvas() {
         dragged = false;
     }, false);
     canvas.addEventListener('mousemove', function(evt) {
+        draw_green_points();
+
         lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft); ///////////////////////////////////////////////////////////////////////////////////////
         lastY = evt.offsetY || (evt.pageY - canvas.offsetTop); ///////////////////////////////////////////////////////////////////////////////////////
         document.getElementById("x").innerHTML = (lastX / canvas.width) * realWidth;
@@ -389,20 +401,8 @@ function init_canvas() {
     canvas.addEventListener('DOMMouseScroll', handleScroll, false);
     canvas.addEventListener('mousewheel', handleScroll, false);
     canvas.addEventListener("mousewheel", function() {
-        redraw();
-        ctx.beginPath();
-        
-        for (i = 0; i < count; i++) {
-            if (tabColor[i] == "green") {
-                // ctx.fillRect(parseInt(tabX[i]), parseInt(tabY[i]), 30, 30);
-                ctx.fillRect(tabX[i]-2, tabY[i]-2, 4, 4);
-                console.log(tabX[i] + ", " + tabY[i] + ", " + tabColor[i]);
-            } else {
+        draw_green_points();
 
-            }
-        }
-        ctx.fillStyle = "yellow";
-        ctx.stroke();
         // ctx.beginPath();
         // ctx.fillRect(canvas.width - 3, 15, 3, 3);
         // ctx.fillRect(0, 0, 3, 3);
@@ -419,38 +419,95 @@ function init_canvas() {
     });
 
     canvas.addEventListener("dblclick", function(evt) {
-        var X = evt.offsetX || (evt.pageX - canvas.offsetLeft);
-        var Y = evt.offsetY || (evt.pageY - canvas.offsetTop);
-        var pt = ctx.transformedPoint(X, Y);
-        var xCoor = Math.round((pt.x / canvas.width) * realWidth);
-        var yCoor = Math.round((pt.y / canvas.height) * realHeight);
-        tabX.push(pt.x);
-        tabY.push(pt.y);
-        tabColor.push("green");
-        count++;
-        // document.getElementById("x").innerHTML = String(xCoor);
-        // document.getElementById("y").innerHTML = String(yCoor);
-        draw_points();
-        $("#data-list-group1").append("X: " + String(xCoor) + " Y: " + String(yCoor) + "<br>");
-        document.getElementById("info").innerHTML = "Współrzędna X: " + String(xCoor) + "<br> Współrzędna Y: " + String(yCoor);
+        if (lock_flag === true) {
+            var X = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+            var Y = evt.offsetY || (evt.pageY - canvas.offsetTop);
+            var pt = ctx.transformedPoint(X, Y);
+            var xCoor = Math.round((pt.x / canvas.width) * realWidth);
+            var yCoor = Math.round((pt.y / canvas.height) * realHeight);
+            tabX.push(pt.x);
+            tabY.push(pt.y);
+            tabColor.push("green");
+            count++;
+            save_to_arr("G", xCoor, yCoor);
+            save_to_xls_arr("G", xCoor, yCoor);
+            // document.getElementById("x").innerHTML = String(xCoor);
+            // document.getElementById("y").innerHTML = String(yCoor);
+            draw_green_points();
+            $("#data-list-group1").append("X: " + String(xCoor) + " Y: " + String(yCoor) + "<br>");
+            document.getElementById("info").innerHTML = "Współrzędna X: " + String(xCoor) + "<br> Współrzędna Y: " + String(yCoor);
+        }
         //console.log(xCoor + ", " + yCoor);
         //console.log(canvas.width + ", " + canvas.height);
     });
+
+    canvas.addEventListener("contextmenu", function(evt) {
+        if (event.button == 2) {
+            rmb++;
+            setTimeout(cc, 600);
+        }
+        if (rmb > 1) {
+            if (lock_flag === true) {
+                var X = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+                var Y = evt.offsetY || (evt.pageY - canvas.offsetTop);
+                var pt = ctx.transformedPoint(X, Y);
+                var xCoor = Math.round((pt.x / canvas.width) * realWidth);
+                var yCoor = Math.round((pt.y / canvas.height) * realHeight);
+                tabX.push(pt.x);
+                tabY.push(pt.y);
+                tabColor.push("red");
+                count++;
+                save_to_arr("R", xCoor, yCoor);
+                save_to_xls_arr("R", xCoor, yCoor);
+                // document.getElementById("x").innerHTML = String(xCoor);
+                // document.getElementById("y").innerHTML = String(yCoor);
+                draw_green_points();
+                $("#data-list-group2").append("X: " + String(xCoor) + " Y: " + String(yCoor) + "<br>");
+                document.getElementById("info").innerHTML = "Współrzędna X: " + String(xCoor) + "<br> Współrzędna Y: " + String(yCoor);
+            }
+        }
+    });
+
+}
+var rmb = 0;
+
+function cc() {
+    rmb = 0;
 }
 
-function draw_points() {
+function draw_green_points() {
     redraw();
     ctx.beginPath();
     for (i = 0; i < count; i++) {
-        if (tabColor[i] == "green") {
-            ctx.fillRect(tabX[i]-2, tabY[i]-2, 4, 4);
-            console.log(tabX[i] + ", " + tabY[i] + ", " + tabColor[i]);
-        } else {
-
+        if (tabColor[i] === "green") {
+            ctx.fillRect(tabX[i] - 2, tabY[i] - 2, 4, 4);
+            console.log("green");
+            ctx.fillStyle = "green";
         }
+        // console.log(tabX[i] + ", " + tabY[i] + ", " + tabColor[i]);
+
     }
-    ctx.fillStyle = "yellow";
+    // var tab = "";
+    // for (i = 0; i < count; i++)
+    //     tab += String(tabX[i]) + ", " + String(tabY[i]) + ", " + String(tabColor[i]) + "\n";
+    // alert(tab);
+
     ctx.stroke();
+
+
+    ctx.beginPath();
+    for (i = 0; i < count; i++) {
+        if (tabColor[i] === "red") {
+            ctx.fillRect(tabX[i] - 2, tabY[i] - 2, 4, 4);
+            console.log("red");
+            ctx.fillStyle = "red";
+        }
+        // console.log(tabX[i] + ", " + tabY[i] + ", " + tabColor[i]);
+
+    }
+
+    ctx.stroke();
+
 }
 
 function trackTransforms(ctx) {
