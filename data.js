@@ -6,7 +6,7 @@ function save_to_csv() {
     if (tabX.length === 0)
         coordinates = "none";
     for (i in tabX) {
-        coordinates += String(tabColor[i]) + ";" + String((tabX[i] / canvas_resized_width) * realWidth) + ";" + String((tabY[i] / canvas_resized_height) * realHeight) + ";" + "\n";
+        coordinates += String(tabColor[i]) + ";" + String(Math.round((tabX[i] / canvas_resized_width) * realWidth)) + ";" + String(Math.round((tabY[i] / canvas_resized_height) * realHeight)) + ";" + "\n";
     }
     var data = new FormData();
     data.append("data", coordinates);
@@ -17,16 +17,18 @@ function save_to_csv() {
 }
 
 function save_to_xls() {
+    coordinatesxls += "<table>";
     if (tabX.length === 0)
         coordinatesxls = "none";
     for (i in tabX) {
-        coordinatesxls += "<table><tr><td>" + String(tabColor[i]) + "</td><td>" + String((tabX[i] / canvas_resized_width) * realWidth) + "</td><td>" + String((tabY[i] / canvas_resized_height) * realHeight) + "</td></tr></table>"
+        coordinatesxls += "<tr><td>" + String(tabColor[i]) + "</td><td>" + String(Math.round((tabX[i] / canvas_resized_width) * realWidth)) + "</td><td>" + String(Math.round((tabY[i] / canvas_resized_height) * realHeight)) + "</td></tr>"
     }
     var data = new FormData();
     data.append("data", coordinatesxls);
     var xhr = (window.XMLHttpRequest) ? new XMLHttpRequest() : new activeXObject("Microsoft.XMLHTTP");
     xhr.open('post', 'export_excel.php', false);
     xhr.send(data);
+    coordinatesxls += "</table>";
     coordinatesxls = "";
 }
 
@@ -49,7 +51,7 @@ function loadCSV() {
 
     var arr = data.split("\n");
     var splitted_coordinates = [];
-    //arr.splice(-1, 1);
+    arr.splice(-1, 1);
     for (i in arr) {
         count++;
         splitted_coordinates = [];
@@ -61,10 +63,15 @@ function loadCSV() {
     }
     //alert(splitted_coordinates[0] + " fds")
     redraw();
+    // document.getElementById("data-list-group1").innerHTML = "";
+    // document.getElementById("data-list-group2").innerHTML = "";
+    // for (i in tabX) {
+    //     if (tabColor[i] === "green")
+    //         $("#data-list-group1").append("X: " + String((tabX[i] / canvas.width) * realWidth) + " Y: " + String((tabY[i] / canvas.height) * realHeight) + "<br>");
+    //     else
+    //         $("#data-list-group2").append("X: " + String((tabX[i] / canvas.width) * realWidth) + " Y: " + String((tabY[i] / canvas.height) * realHeight) + "<br>");
+    // }
     draw_points();
-
-
-
 }
 
 function loadXLS() {
@@ -77,6 +84,7 @@ function loadXLS() {
     };
     xhttp.open("GET", "upload/sd.xls", false);
     xhttp.send();
+    alert(data)
 }
 
 $("#btnExport").click(function(e) {

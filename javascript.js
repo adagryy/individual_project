@@ -395,7 +395,7 @@ function init_canvas() {
             // document.getElementById("x").innerHTML = String(xCoor);
             // document.getElementById("y").innerHTML = String(yCoor);
             draw_points();
-            $("#data-list-group1").append("X: " + String(xCoor) + " Y: " + String(yCoor) + "<br>");
+            // $("#data-list-group1").append("X: " + String(xCoor) + " Y: " + String(yCoor) + "<br>");
             document.getElementById("info").innerHTML = "Współrzędna X: " + String(xCoor) + "<br> Współrzędna Y: " + String(yCoor);
         }
         //console.log(xCoor + ", " + yCoor);
@@ -403,6 +403,7 @@ function init_canvas() {
     });
 
     canvas.addEventListener("contextmenu", function(evt) {
+
         if (event.button == 2) {
             rmb++;
             setTimeout(cc, 600);
@@ -425,33 +426,60 @@ function init_canvas() {
                 // document.getElementById("x").innerHTML = String(xCoor);
                 // document.getElementById("y").innerHTML = String(yCoor);
                 draw_points();
-                $("#data-list-group2").append("X: " + String(xCoor) + " Y: " + String(yCoor) + "<br>");
+                // $("#data-list-group2").append("X: " + String(xCoor) + " Y: " + String(yCoor) + "<br>");
                 document.getElementById("info").innerHTML = "Współrzędna X: " + String(xCoor) + "<br> Współrzędna Y: " + String(yCoor);
+            }
+        }
+    });
+    var rmb = 0;
+
+    function cc() {
+        rmb = 0;
+    }
+    canvas.addEventListener("click", function(evt) {
+        if (evt.shiftKey) {
+            if (lock_flag === true) {
+                document.getElementById("info").innerHTML = "Współrzędna X: <br> Współrzędna Y: ";
+                var X = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+                var Y = evt.offsetY || (evt.pageY - canvas.offsetTop);
+                var pt = ctx.transformedPoint(X, Y);
+                var distance;
+
+                for (i in tabX) {
+                    distance = Math.sqrt(Math.pow(pt.x - tabX[i], 2) + Math.pow(pt.y - tabY[i], 2));
+                    if (distance < 8) {
+                        tabX.splice(i, 1);
+                        tabY.splice(i, 1);
+                        tabColor.splice(i, 1);
+                        draw_points();
+                    }
+                    //array.splice(index, 1);
+                }
             }
         }
     });
 
 }
-var rmb = 0;
 
-function cc() {
-    rmb = 0;
-}
 
 function draw_points() {
 
     //redraw();
     var tab = "";
-
+    document.getElementById("data-list-group1").innerHTML = "";
+    document.getElementById("data-list-group2").innerHTML = "";
     for (i = 0; i < count; i++) {
         //if (tabColor[i] == "green") 
         {
-
+            if (tabColor[i] === "green")
+                $("#data-list-group1").append("X: " + String((tabX[i] / canvas.width) * realWidth) + " Y: " + String((tabY[i] / canvas.height) * realHeight) + "<br>");
+            if (tabColor[i] === "red")
+                $("#data-list-group2").append("X: " + String((tabX[i] / canvas.width) * realWidth) + " Y: " + String((tabY[i] / canvas.height) * realHeight) + "<br>");
             ctx.beginPath();
             ctx.fillRect(parseInt(tabX[i]) - 2, parseInt(tabY[i]) - 2, 4, 4);
-      
+
             ctx.fillStyle = String(tabColor[i]) === "green" ? "green" : "red";
-            tab += String(tabX[i]) + ", " + String(tabY[i]) + ", " + String(tabColor[i]) + "\n";
+            //tab += String(tabX[i]) + ", " + String(tabY[i]) + ", " + String(tabColor[i]) + "\n";
             ctx.stroke();
         }
         // console.log(tabX[i] + ", " + tabY[i] + ", " + tabColor[i]);
