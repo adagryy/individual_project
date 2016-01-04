@@ -1,7 +1,7 @@
 <?php
 if(!empty($_POST['data'])){
 	$data = $_POST['data'];
-	$file = "upload/sd.txt";//generates random name
+	$file = "upload/sd.csv";//generates random name
 	
 	$current = file_get_contents($file);
 
