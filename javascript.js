@@ -91,22 +91,22 @@ function getMeta() { //FETCHES NATURAL DIMENSIONS OF AN IMAGE FROM SERVER,
     img.src = url;
 }
 
-function sleep(milliseconds) {
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-        if ((new Date().getTime() - start) > milliseconds) {
-            break;
-        }
-    }
-}
+// function sleep(milliseconds) {
+//     var start = new Date().getTime();
+//     for (var i = 0; i < 1e7; i++) {
+//         if ((new Date().getTime() - start) > milliseconds) {
+//             break;
+//         }
+//     }
+// }
 
-function getMousePos(canvas, evt) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-        x: evt.clientX - rect.left,
-        y: evt.clientY - rect.top
-    };
-}
+// function getMousePos(canvas, evt) {
+//     var rect = canvas.getBoundingClientRect();
+//     return {
+//         x: evt.clientX - rect.left,
+//         y: evt.clientY - rect.top
+//     };
+// }
 
 function show_image() {
 
@@ -465,7 +465,7 @@ function init_canvas() {
 function draw_points() {
 
     //redraw();
-    var tab = "";
+    //var tab = "";
     document.getElementById("data-list-group1").innerHTML = "";
     document.getElementById("data-list-group2").innerHTML = "";
     for (i = 0; i < count; i++) {
