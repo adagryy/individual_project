@@ -70,8 +70,8 @@ function loadCSV() {
             tabX[i] = Math.round((parseInt(splitted_coordinates[1]) / realWidth) * canvas.width);
             tabY[i] = Math.round((parseInt(splitted_coordinates[2]) / realHeight) * canvas.height);
         }
-        //alert(splitted_coordinates[0] + " fds")
-        redraw();
+        //alert(data)
+        //redraw();
         // document.getElementById("data-list-group1").innerHTML = "";
         // document.getElementById("data-list-group2").innerHTML = "";
         // for (i in tabX) {
@@ -81,6 +81,7 @@ function loadCSV() {
         //         $("#data-list-group2").append("X: " + String((tabX[i] / canvas.width) * realWidth) + " Y: " + String((tabY[i] / canvas.height) * realHeight) + "<br>");
         // }
         draw_points();
+        arr = [];
     } else {
         alert("You have to start marking before importing points");
     }

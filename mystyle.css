@@ -70,3 +70,9 @@ body{
 	display: inline-block;
 	
 }
+
+form, table {
+     display:inline;
+     margin:0px;
+     padding:0px;
+}

@@ -1,5 +1,7 @@
 var xx, yy, axx, ayy; //COORDINATES ON THE PICTURE POINTED BY POINTER
 
+//var imgName;
+
 var realWidth = 0,
     realHeight = 0; //REAL DIMENSIONS OF PICTURE IMPORTED FROM SERVER.
 
@@ -18,6 +20,8 @@ var count = 0;
 
 var canvas_resized_width;
 var canvas_resized_height;
+
+
 
 $(window).load(function() {
     $("#lock_button").hide();
@@ -41,7 +45,7 @@ function initialize_app() {
     $("#lock_button").click(function() { //BLOCKS RESIZING AFTER FITTING THE CORRECT IMAGE DIMENSIONS BY HAND
         lock_flag = true;
         $("#lock_button").hide();
-        $("#myCanvas").resizable("destroy");
+        // $("#myCanvas").resizable("destroy");
         canvas_resized_width = document.getElementsByTagName('canvas')[0].offsetWidth; //THESE ARE NECESSARY FOR CALCULATING CORRECT COORDINATES OF A PICTURE ON A CANVAS
         canvas_resized_height = document.getElementsByTagName('canvas')[0].offsetHeight;
         //alert(canvas_resized_width + ", " + canvas_resized_height);
@@ -118,56 +122,64 @@ function show_image() {
 
         var canvas = document.createElement('canvas');
         canvas.id = "myCanvas";
-        var ctx = canvas.getContext("2d");
+        ctx = canvas.getContext("2d");
 
         $(".col-sm-9").append(canvas);
 
-
+        //imgName = document.getElementById("imgName").value;
         imag = document.createElement('img');
         imag.id = 'ddd';
+        //imag.src = imgName;
         imag.src = "images/" + load_image();
         getMeta();
 
         setTimeout(function() { //DELAY (WAITING FOR IMAGE DIMENSIONS)
-            if (realWidth > 1000) {
-                scalerX = realWidth / 3;
-                scalerY = realHeight / 3;
-                ctx.canvas.width = scalerX;
-                ctx.canvas.height = scalerY;
-                imag.width = scalerX;
-                imag.height = scalerY;
-                //ctx.drawImage(imag, 0, 0, realWidth / 3, realHeight / 3);
-                //imag.onload = function(){
-                ctx.drawImage(imag, 0, 0, scalerX, scalerY);
-                //}
-                // imag.width = Math.round(realWidth / 3);
-                // imag.height = Math.round(realHeight / 3);
+            var workplace_width = document.getElementById("info").offsetWidth;
+            var coincident = realWidth / workplace_width;
 
-            } else {
-                scalerX = realWidth;
-                scalerY = realHeight;
-                ctx.canvas.width = scalerX;
-                ctx.canvas.height = scalerY;
-                imag.width = scalerX;
-                imag.height = scalerY;
-                //imag.onload = function(){
-                ctx.drawImage(imag, 0, 0, scalerX, scalerY);
-                //}
-                // imag.width = realWidth;
-                // imag.height = realHeight;
-            }
+            scalerX = realWidth / coincident;
+            scalerY = realHeight / coincident;
+
+            // if (realWidth > 1000) {
+            //     scalerX = realWidth / 3;
+            //     scalerY = realHeight / 3;
+            ctx.canvas.width = scalerX;
+            ctx.canvas.height = scalerY;
+            imag.width = scalerX;
+            imag.height = scalerY;
+            //ctx.drawImage(imag, 0, 0, realWidth / 3, realHeight / 3);
+            //imag.onload = function(){
+            ctx.drawImage(imag, 0, 0, scalerX, scalerY);
+
+            //     //}
+            //     // imag.width = Math.round(realWidth / 3);
+            //     // imag.height = Math.round(realHeight / 3);
+
+            // } else {
+            //     scalerX = realWidth;
+            //     scalerY = realHeight;
+            //     ctx.canvas.width = scalerX;
+            //     ctx.canvas.height = scalerY;
+            //     imag.width = scalerX;
+            //     imag.height = scalerY;
+            //     //imag.onload = function(){
+            //     ctx.drawImage(imag, 0, 0, scalerX, scalerY);
+            //     //}
+            //     // imag.width = realWidth;
+            //     // imag.height = realHeight;
+            // }
 
             // $(".col-sm-9").append(imag);
             $("canvas").append(imag);
             //ctx.drawImage(imag, 0, 0, realWidth, realHeight);
 
-            $(function() {
-                $("#myCanvas").resizable({
-                    containment: ".col-sm-9",
-                    aspectRatio: true
+            // $(function() {
+            //     $("#myCanvas").resizable({
+            //         containment: ".col-sm-9",
+            //         aspectRatio: true
 
-                });
-            });
+            //     });
+            // });
 
             // $('#myCanvas').on("mousemove", function(event) {
             //     var myImg = document.getElementById('myCanvas');
@@ -304,7 +316,9 @@ function init_canvas() {
         dragged = false;
     }, false);
     canvas.addEventListener('mousemove', function(evt) {
-        draw_points();
+        // if (evt.buttons == 1 || evt.buttons == 3) {
+        //     draw_points();
+        // }
 
         lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft); ///////////////////////////////////////////////////////////////////////////////////////
         lastY = evt.offsetY || (evt.pageY - canvas.offsetTop); ///////////////////////////////////////////////////////////////////////////////////////
@@ -325,9 +339,12 @@ function init_canvas() {
             ctx.translate(pt.x - dragStart.x, pt.y - dragStart.y);
 
             redraw();
+
+            //debugger;
         }
     }, false);
     canvas.addEventListener('mouseup', function(evt) {
+        draw_points();
         dragStart = null;
         if (!dragged) zoom(evt.shiftKey ? -1 : 1);
     }, false);
@@ -345,6 +362,7 @@ function init_canvas() {
         ctx.scale(factor, factor);
         ctx.translate(-pt.x, -pt.y);
         redraw();
+        draw_points();
     }
 
     var handleScroll = function(evt) {
@@ -463,7 +481,7 @@ function init_canvas() {
 
 
 function draw_points() {
-
+    console.log("up");
     //redraw();
     //var tab = "";
     document.getElementById("data-list-group1").innerHTML = "";
@@ -472,15 +490,17 @@ function draw_points() {
         //if (tabColor[i] == "green") 
         {
             if (tabColor[i] === "green")
-                $("#data-list-group1").append("X: " + String((tabX[i] / canvas.width) * realWidth) + " Y: " + String((tabY[i] / canvas.height) * realHeight) + "<br>");
+                $("#data-list-group1").append("X: " + String(Math.round((tabX[i] / canvas.width) * realWidth)) + " Y: " + String(Math.round((tabY[i] / canvas.height) * realHeight)) + "<br>");
             if (tabColor[i] === "red")
-                $("#data-list-group2").append("X: " + String((tabX[i] / canvas.width) * realWidth) + " Y: " + String((tabY[i] / canvas.height) * realHeight) + "<br>");
+                $("#data-list-group2").append("X: " + String(Math.round((tabX[i] / canvas.width) * realWidth)) + " Y: " + String(Math.round((tabY[i] / canvas.height) * realHeight)) + "<br>");
+            //debugger;
             ctx.beginPath();
+            ctx.fillStyle = String(tabColor[i]) === "green" ? "green" : "red";
             ctx.fillRect(parseInt(tabX[i]) - 2, parseInt(tabY[i]) - 2, 4, 4);
 
-            ctx.fillStyle = String(tabColor[i]) === "green" ? "green" : "red";
+
             //tab += String(tabX[i]) + ", " + String(tabY[i]) + ", " + String(tabColor[i]) + "\n";
-            ctx.stroke();
+            //ctx.stroke();
         }
         // console.log(tabX[i] + ", " + tabY[i] + ", " + tabColor[i]);
 

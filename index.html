@@ -17,14 +17,12 @@
 <!-- <script src="wheelzoom.js"></script>
 <script type="text/javascript" src="imageloader.js"></script>
 <script type="text/javascript" src="canvaszoom.js"></script> -->
-
 <!-- <script src="canvasrescale.js"></script> -->
 
 <body>
     <header class="navbar navbar-fixed-top navbar-inverse">
         <div class="button_aligned">
             <button class="btn btn-danger" type="button" id="reset" onclick="reload_page()">Reset application</button>
-
             <span class="btn btn-primary btn-file" id="span_button">
                         Choose file...<input  type="file" name="img" accept=".png, .jpg, .jpeg" />
                         </span>
@@ -40,10 +38,18 @@
                     <span class="caret"></span></button>
                 <button id="reset_filters" class="btn btn-danger" type="button">Reset filters
                     <button class="btn btn-info" type="button" id="lock_button">Start marking</button>
-                                        <ul class="dropdown-menu">
+<!--                     <form action="uploader.php" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            Select image to upload:
+                            <input type="file" class = "form-control" name="fileToUpload" id="fileToUpload">
+                            <input type="hidden" id="imgName" value="<?php echo $_FILES["fileToUpload"]["name"]; ?>" />
+                        </div>
+                        <input class="btn btn-default" type="submit" value="Upload Image" name="submit" onclick="show_image()">
+                    </form> -->
+                    <ul class="dropdown-menu">
                         <li class="button-margin">
                             <button type="button" class="btn btn-info" onclick="save_to_csv()">Export to CSV format</button>
-                        </li>                        
+                        </li>
                         <li class="button-margin">
                             <button type="button" class="btn btn-info" onclick="save_to_xls()">Export to Excel format</button>
                         </li>
