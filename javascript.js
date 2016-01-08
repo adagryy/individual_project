@@ -19,7 +19,8 @@ var config_JSON_object = {
     "defalut_jumbotron_height_factor": 1.5,
     "list_group_default_height": 300,
     "delay": 100, //miliseconds - time to wait for real dimensions of the image
-    "power": 2,    /* !!!DANGER!!! DO NOT CHANGE THE VALUE OF POWER!!! IT WILL CAUSE PROBLEMS WITH DEFINING DISTANCE DURING REMOVING MARKERS!!! */
+    "power": 2,
+    /* !!!DANGER!!! DO NOT CHANGE THE VALUE OF POWER!!! IT WILL CAUSE PROBLEMS WITH DEFINING DISTANCE DURING REMOVING MARKERS!!! */
     "marker_width_and_height": 4, //I assume, that marker is square
     "distance": 8, //this parameter is used to remove marker from image - if you click closer, that 8 pixels, marker will be removed
     "scale_factor": 1.01, //when the image is resized by wheelmouse button, its size changes 1.01 times
@@ -139,7 +140,7 @@ function show_image() {
         getMeta();
 
         setTimeout(function() { //DELAY (WAITING FOR IMAGE DIMENSIONS)
-            var workplace_width = document.getElementById("info").offsetWidth;
+            var workplace_width = document.getElementById("image").offsetWidth;
             var factor = realWidth / workplace_width;
 
             canvas_width = realWidth / factor;
@@ -191,6 +192,7 @@ function init_canvas() {
         lastY = canvas.height / 2;
     var dragStart, dragged;
     canvas.addEventListener('mousedown', function(evt) {
+        //debugger;
         document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
         lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
         lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
@@ -199,6 +201,7 @@ function init_canvas() {
         dragged = false;
     }, false);
     canvas.addEventListener('mousemove', function(evt) {
+
         lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
         lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
         var pt = ctx.transformedPoint(lastX, lastY);
@@ -220,10 +223,11 @@ function init_canvas() {
         }
     }, false);
     canvas.addEventListener('mouseup', function(evt) {
-        if (dragged === true) { //<----------------------------------------------------------------------if the image has been dragged
+        if (dragged) { //<----------------------------------------------------------------------if the image has been dragged
             draw_points(); //we are redrawing points after moving (in fact, after releasing MB) image---^
         }
         dragStart = null;
+        //if (!dragged) zoom(evt.shiftKey ? -1 : 1);
     }, false);
 
     var scaleFactor = config_JSON_object.scale_factor;
@@ -267,7 +271,8 @@ function init_canvas() {
 
             coordinates_array.push(coordinates_object);
 
-            draw_points();
+            draw_one_point();
+            //draw_points();
 
             document.getElementById("info").innerHTML = "Współrzędna X: " + String(xCoor) + "<br> Współrzędna Y: " + String(yCoor);
         }
@@ -298,7 +303,8 @@ function init_canvas() {
 
                 coordinates_array.push(coordinates_object);
 
-                draw_points();
+                draw_one_point();
+                //draw_points();
 
                 document.getElementById("info").innerHTML = "Współrzędna X: " + String(xCoor) + "<br> Współrzędna Y: " + String(yCoor);
             }
@@ -309,7 +315,7 @@ function init_canvas() {
     function cc() {
         rmb = 0;
     }
-    
+
     canvas.addEventListener("click", function(evt) {
         if (evt.shiftKey) {
             if (lock_flag === true) {
@@ -333,6 +339,19 @@ function init_canvas() {
 
 }
 
+function draw_one_point() {
+    var index = coordinates_array.length - 1;
+
+    if (coordinates_array[index].color === "0")
+        $("#data-list-group1").append("X: " + String(coordinates_array[index].x_in_real) + " Y: " + String(coordinates_array[index].y_in_real) + "<br>");
+    else
+        $("#data-list-group2").append("X: " + String(coordinates_array[index].x_in_real) + " Y: " + String(coordinates_array[index].y_in_real) + "<br>");
+
+    ctx.beginPath();
+    ctx.fillStyle = coordinates_array[index].color === "0" ? "green" : "red";
+    ctx.fillRect(coordinates_array[index].x_on_screen - config_JSON_object.marker_width_and_height / 2, coordinates_array[index].y_on_screen - config_JSON_object.marker_width_and_height / 2, config_JSON_object.marker_width_and_height, config_JSON_object.marker_width_and_height);
+    console.log("One point has been drawn!");
+}
 
 function draw_points() {
     document.getElementById("data-list-group1").innerHTML = "";

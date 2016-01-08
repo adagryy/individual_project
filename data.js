@@ -58,7 +58,7 @@ function loadCSV() {
         // tabColor = [];
         // count = 0;
 
-        coordinates_array = [];
+        //coordinates_array = [];
         var temp_coordinates_array_object;
 
         var arr = data.split("\n");

@@ -19,53 +19,59 @@
     <header class="navbar navbar-fixed-top navbar-inverse">
         <div class="button_aligned">
             <button class="btn btn-danger" type="button" id="reset" onclick="reload_page()">Reset application</button>
-            <span class="btn btn-primary btn-file" id="span_button">
+            <!--             <div class="dropdown"> -->
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Export data...
+                <span class="caret"></span></button>
+            <button id="reset_filters" class="btn btn-danger" type="button">Reset filters
+                <button class="btn btn-info" type="button" id="lock_button">Start marking</button>
+                <ul class="dropdown-menu">
+                    <li class="button-margin">
+                        <button type="button" class="btn btn-info" onclick="save_to_csv()">Export to CSV format</button>
+                    </li>
+                    <li class="button-margin">
+                        <button type="button" class="btn btn-info" onclick="save_to_xls()">Export to Excel format</button>
+                    </li>
+                    <li class="button-margin">
+                        <button type="button" class="btn btn-info" onclick="loadCSV()">Load from CSV</button>
+                    </li>
+                    <!--                         <li class="button-margin">
+                            <button type="button" class="btn btn-info" onclick="loadXLS()">Load from XLS</button>
+                        </li> -->
+                    <li><a href="#">Matlab</a></li>
+                </ul>
+                <!--             </div> -->
+                <span class="btn btn-primary btn-file" id="span_button">
                         Choose file...<input  type="file" name="img" accept=".png, .jpg, .jpeg" />
                         </span>
-            <button class="btn btn-primary" type="button" id="show_image_button" onclick="show_image()">Display file</button>
-            </file>
+                <button class="btn btn-primary" type="button" id="show_image_button" onclick="show_image()">Display file</button>
+                </file>
         </div>
     </header>
     <div class="container-fluid">
         <div class="jumbotron">
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Export data...
-                    <span class="caret"></span></button>
-                <button id="reset_filters" class="btn btn-danger" type="button">Reset filters
-                    <button class="btn btn-info" type="button" id="lock_button">Start marking</button>
-                    <ul class="dropdown-menu">
-                        <li class="button-margin">
-                            <button type="button" class="btn btn-info" onclick="save_to_csv()">Export to CSV format</button>
-                        </li>
-                        <li class="button-margin">
-                            <button type="button" class="btn btn-info" onclick="save_to_xls()">Export to Excel format</button>
-                        </li>
-                        <li class="button-margin">
-                            <button type="button" class="btn btn-info" onclick="loadCSV()">Load from CSV</button>
-                        </li>
-                        <!--                         <li class="button-margin">
-                            <button type="button" class="btn btn-info" onclick="loadXLS()">Load from XLS</button>
-                        </li> -->
-                        <li><a href="#">Matlab</a></li>
-                    </ul>
-            </div>
-            <p>
-                <div class="box">X:</div>
-                <div id="x" class="box"> </div>
-                <div class="box">Y:</div>
-                <div id="y" class="box"></div>
-                <br>
-            </p>
-            <div id="controls">
-                <p>
-                    <input type="text" id="amount" readonly style="border:0; color:gray; font-weight:bold;">
-                    <input type="text" id="amount2" readonly style="border:0; color:gray; font-weight:bold;">
-                </p>
-                <div id="slider" class="sliders"></div>
-                <div id="slider2" class="sliders"></div>
-            </div>
+            <div class="box">X:</div>
+            <div id="x" class="box"> </div>
+            <div class="box">Y:</div>
+            <div id="y" class="box"></div>
+            <br>
             <div class="mini-layout fluid">
                 <div class="inline1 col-sm-3">
+                    <div id="controls">
+                        <div class="slider-display">
+                            <p>Brightness</p>
+                            <div id="slider" class="sliders"></div>
+                            <input type="text" id="amount" readonly style="border:0; color:gray; font-weight:bold;">
+                        </div>
+                        <div class="slider-display">
+                            <p>Contrast</p>
+                            <div id="slider2" class="sliders"></div>
+                            <input type="text" id="amount2" readonly style="border:0; color:gray; font-weight:bold;">
+                        </div>
+                    </div>
+                    <div class="well" id="info">
+                        Współrzędna X:
+                        <br> Współrzędna Y:
+                    </div>
                     <p class="text-success">Coordinates of green points:</p>
                     <ul class="well list-group" id="data-list-group1">
                     </ul>
@@ -73,12 +79,12 @@
                     <ul class="well list-group" id="data-list-group2">
                     </ul>
                 </div>
-                <form name="image" id="image" enctype="multipart/form-data" action="" method="post" class="col-sm-9">
-                    <p class="text-success">Some content:</p>
-                    <div class="well" id="info">
-                        Współrzędna X:
-                        <br> Współrzędna Y:
+                <p>
+                    <div id="image" class="col-sm-9">
+                        <!-- enctype="multipart/form-data" action="" method="post" -->
+                        <!-- <p class="text-success">Some content:</p> -->
                     </div>
+                </p>
             </div>
         </div>
     </div>
