@@ -1,7 +1,3 @@
-var xx, yy, axx, ayy; //COORDINATES ON THE PICTURE POINTED BY POINTER
-
-//var imgName;
-
 var realWidth = 0,
     realHeight = 0; //REAL DIMENSIONS OF PICTURE IMPORTED FROM SERVER.
 
@@ -11,54 +7,81 @@ var canvas, ctx;
 
 var imag;
 
-var scalerX, scalerY;
+var canvas_width, canvas_height;
 
-var tabX = [];
-var tabY = [];
-var tabColor = [];
-var count = 0;
+//-----------------------------
+var coordinates_object; // global variable for storing JSON object during saving and reading coordinates form 'coordinates_array' array
+var coordinates_array = new Array(); //main array for storing coordinates
+//-----------------------------
 
-var canvas_resized_width;
-var canvas_resized_height;
-
-
+//THIS OBJECT LETS YOU CONFIGURE AND MANAGE ALL APP PARAMETERS
+var config_JSON_object = {
+    "defalut_jumbotron_height_factor": 1.5,
+    "list_group_default_height": 300,
+    "delay": 100, //miliseconds - time to wait for real dimensions of the image
+    "power": 2,    /* !!!DANGER!!! DO NOT CHANGE THE VALUE OF POWER!!! IT WILL CAUSE PROBLEMS WITH DEFINING DISTANCE DURING REMOVING MARKERS!!! */
+    "marker_width_and_height": 4, //I assume, that marker is square
+    "distance": 8, //this parameter is used to remove marker from image - if you click closer, that 8 pixels, marker will be removed
+    "scale_factor": 1.01, //when the image is resized by wheelmouse button, its size changes 1.01 times
+    "slider_min_value": 0, //min value for contrast and brightness slider
+    "slider_max_value": 400, //max value for contrast and brightness slider
+    "slider_default_value": 100, //default value for contrast and brightness slider
+    "default_brightness_reset_value": 100,
+    "default_contrast_reset_value": 100
+}
 
 $(window).load(function() {
     $("#lock_button").hide();
     $("#reset_filters").hide();
-    $(".jumbotron").height(1.5 * $(".jumbotron").width());
-    $(".list-group").height(300);
-    $(".col-sm-9").height(1.5 * $(".col-sm-9").width());
+    $(".jumbotron").height(config_JSON_object.defalut_jumbotron_height_factor * $(".jumbotron").width());
+    $(".list-group").height(config_JSON_object.list_group_default_height);
+    $(".col-sm-9").height(config_JSON_object.defalut_jumbotron_height_factor * $(".col-sm-9").width());
     initialize_app();
     $.getScript("data.js"); //LOAD EXTERNAL "data.js" SCRIPT
 });
-
-function save_w(text1, text2) {
-    var data = new FormData();
-    data.append("data", text1 + ";" + text2 + ";");
-    var xhr = (window.XMLHttpRequest) ? new XMLHttpRequest() : new activeXObject("Microsoft.XMLHTTP");
-    xhr.open('post', 'skrypt.php', true);
-    xhr.send(data);
-}
 
 function initialize_app() {
     $("#lock_button").click(function() { //BLOCKS RESIZING AFTER FITTING THE CORRECT IMAGE DIMENSIONS BY HAND
         lock_flag = true;
         $("#lock_button").hide();
-        // $("#myCanvas").resizable("destroy");
-        canvas_resized_width = document.getElementsByTagName('canvas')[0].offsetWidth; //THESE ARE NECESSARY FOR CALCULATING CORRECT COORDINATES OF A PICTURE ON A CANVAS
-        canvas_resized_height = document.getElementsByTagName('canvas')[0].offsetHeight;
-        //alert(canvas_resized_width + ", " + canvas_resized_height);
-        // wheelzoom(document.querySelectorAll('#myCanvas')); //ZOOMING BY SCROOL
-
         changeBrightness_Contrast();
     });
     $("#reset_filters").click(function() { //RESETS IMAGE FILTERS AFTER CLICKING "RESET FILTERS BUTTON"
-        $('#slider').slider('value', 100);
+        $('#slider').slider('value', config_JSON_object.default_brightness_reset_value);
         $("#amount").val($("#slider").slider("value"));
-        $('#slider2').slider('value', 100);
+        $('#slider2').slider('value', config_JSON_object.default_contrast_reset_value);
         $("#amount2").val($("#slider2").slider("value"));
         changeBrightness_Contrast();
+    });
+
+    $(function() { //CHANGE BRIGHTNESS SLIDER HANDLER
+        $("#slider").slider({
+            orientation: "vertical",
+            range: "min",
+            min: config_JSON_object.slider_min_value,
+            max: config_JSON_object.slider_max_value,
+            value: config_JSON_object.slider_default_value,
+            slide: function(event, ui) {
+                $("#amount").val(ui.value);
+                changeBrightness_Contrast();
+            }
+        });
+        $("#amount").val($("#slider").slider("value")); //inserts the beginning value of the slider
+    });
+
+    $(function() { //CHANGE CONTRAST SLIDER HANDLER
+        $("#slider2").slider({
+            orientation: "vertical",
+            range: "min",
+            min: config_JSON_object.slider_min_value,
+            max: config_JSON_object.slider_max_value,
+            value: config_JSON_object.slider_default_value,
+            slide: function(event, ui) {
+                $("#amount2").val(ui.value);
+                changeBrightness_Contrast();
+            }
+        });
+        $("#amount2").val($("#slider2").slider("value")); //inserts the beginning value of the slider
     });
 
 }
@@ -95,23 +118,6 @@ function getMeta() { //FETCHES NATURAL DIMENSIONS OF AN IMAGE FROM SERVER,
     img.src = url;
 }
 
-// function sleep(milliseconds) {
-//     var start = new Date().getTime();
-//     for (var i = 0; i < 1e7; i++) {
-//         if ((new Date().getTime() - start) > milliseconds) {
-//             break;
-//         }
-//     }
-// }
-
-// function getMousePos(canvas, evt) {
-//     var rect = canvas.getBoundingClientRect();
-//     return {
-//         x: evt.clientX - rect.left,
-//         y: evt.clientY - rect.top
-//     };
-// }
-
 function show_image() {
 
     if (load_image() != null) {
@@ -126,115 +132,41 @@ function show_image() {
 
         $(".col-sm-9").append(canvas);
 
-        //imgName = document.getElementById("imgName").value;
         imag = document.createElement('img');
         imag.id = 'ddd';
-        //imag.src = imgName;
+
         imag.src = "images/" + load_image();
         getMeta();
 
         setTimeout(function() { //DELAY (WAITING FOR IMAGE DIMENSIONS)
             var workplace_width = document.getElementById("info").offsetWidth;
-            var coincident = realWidth / workplace_width;
+            var factor = realWidth / workplace_width;
 
-            scalerX = realWidth / coincident;
-            scalerY = realHeight / coincident;
+            canvas_width = realWidth / factor;
+            canvas_height = realHeight / factor;
 
-            // if (realWidth > 1000) {
-            //     scalerX = realWidth / 3;
-            //     scalerY = realHeight / 3;
-            ctx.canvas.width = scalerX;
-            ctx.canvas.height = scalerY;
-            imag.width = scalerX;
-            imag.height = scalerY;
-            //ctx.drawImage(imag, 0, 0, realWidth / 3, realHeight / 3);
-            //imag.onload = function(){
-            ctx.drawImage(imag, 0, 0, scalerX, scalerY);
+            ctx.canvas.width = canvas_width;
+            ctx.canvas.height = canvas_height;
+            imag.width = canvas_width;
+            imag.height = canvas_height;
 
-            //     //}
-            //     // imag.width = Math.round(realWidth / 3);
-            //     // imag.height = Math.round(realHeight / 3);
+            ctx.drawImage(imag, 0, 0, canvas_width, canvas_height);
 
-            // } else {
-            //     scalerX = realWidth;
-            //     scalerY = realHeight;
-            //     ctx.canvas.width = scalerX;
-            //     ctx.canvas.height = scalerY;
-            //     imag.width = scalerX;
-            //     imag.height = scalerY;
-            //     //imag.onload = function(){
-            //     ctx.drawImage(imag, 0, 0, scalerX, scalerY);
-            //     //}
-            //     // imag.width = realWidth;
-            //     // imag.height = realHeight;
-            // }
-
-            // $(".col-sm-9").append(imag);
             $("canvas").append(imag);
-            //ctx.drawImage(imag, 0, 0, realWidth, realHeight);
-
-            // $(function() {
-            //     $("#myCanvas").resizable({
-            //         containment: ".col-sm-9",
-            //         aspectRatio: true
-
-            //     });
-            // });
-
-            // $('#myCanvas').on("mousemove", function(event) {
-            //     var myImg = document.getElementById('myCanvas');
-            //     GetCoordinates(myImg);
-            // });
-
-            // $('#myCanvas').on("mousewheel", function(event) {
-            //     console.log(getMousePos(canvas, event));
-            // });
-
-            // $('#myCanvas').on("mousemove", function(event) {
-            //     var myImg = document.getElementById('myCanvas');
-            //     GetCoordinates(myImg);
-            // });
 
             $('#myCanvas').on('contextmenu', function(evt) { //BLOCKS CONTEXTMENU APPEARING WHEM RIGHT CLICK
                 evt.preventDefault();
             });
 
-            // $("#myCanvas").mouseup(function(evt) { //DOUBLE CLICK RMB HANDLNG MACHINERY
-            //     if (evt.which === 3) { //CHECKING IF RIGHT MOUSE BUTTON WAS PRESSED
-            //         if (evt.originalEvent.detail === 2) {
-            //             if (lock_flag === true) {
-            //                 $("#data-list-group2").append("X: " + String(xx) + " Y: " + String(yy) + "<br>");
-            //                 document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
-            //             }
-            //         }
-            //     }
-            // });
-
-            // $("#myCanvas").dblclick(function() { //IT TYPES COORDINATES TO THE TABLE
-            //     if (lock_flag === true)
-            //         $("#data-list-group1").append("X: " + String(xx) + " Y: " + String(yy) + "<br>");
-            //     document.getElementById("info").innerHTML = "Współrzędna X: " + String(xx) + "<br> Współrzędna Y: " + String(yy);
-            // });
-            // var galaxy = new CanvasZoom( document.getElementById('myCanvas'), "images/",  1500,  1000 );
-
-
-        }, 100);
+        }, config_JSON_object.delay);
         init_canvas();
     }
 
 }
 
-// function rerender() {
-//     var canvas = document.getElementById('myCanvas');
-
-// }
-
 function reload_page() {
     location.reload();
 }
-
-
-
 
 //===================================================================================================
 function redraw() {
@@ -243,62 +175,13 @@ function redraw() {
     var p2 = ctx.transformedPoint(canvas.width, canvas.height);
     ctx.clearRect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
 
-    ctx.drawImage(imag, 0, 0, scalerX, scalerY);
+    ctx.drawImage(imag, 0, 0, canvas_width, canvas_height);
 
-    // Alternatively:
-    // ctx.save();
-    // ctx.setTransform(1,0,0,1,0,0);
-    // ctx.clearRect(0,0,canvas.width,canvas.height);
-    // ctx.restore();
-
-    // ctx.drawImage(gkhead,200,50);
-
-    // ctx.beginPath();
-    // ctx.lineWidth = 20;
-    // ctx.moveTo(399, 250);
-    // ctx.lineTo(474, 256);
-    // ctx.stroke();
-
-    // ctx.save();
-
-    // ctx.translate(4, 2);
-    // ctx.beginPath();
-    // ctx.lineWidth = 10;
-    // ctx.moveTo(436, 253);
-    // ctx.lineTo(437.5, 233);
-    // ctx.stroke();
-
-    // ctx.save();
-    // ctx.translate(438.5, 223);
-    // ctx.strokeStyle = '#06c';
-    // ctx.beginPath();
-    // ctx.lineWidth = 0.05;
-    // for (var i = 0; i < 60; ++i) {
-    //     ctx.rotate(6 * i * Math.PI / 180);
-    //     ctx.moveTo(9, 0);
-    //     ctx.lineTo(10, 0);
-    //     ctx.rotate(-6 * i * Math.PI / 180);
-    // }
-    // ctx.stroke();
-    // ctx.restore();
-
-    // ctx.beginPath();
-    // ctx.lineWidth = 0.2;
-    // ctx.arc(438.5, 223, 10, 0, Math.PI * 2);
-    // ctx.stroke();
-    // ctx.restore();
-
-    // ctx.drawImage(ball,379,233,40,40);
-    // ctx.drawImage(ball,454,239,40,40);
-    // ctx.drawImage(ball,310,295,20,20);
-    // ctx.drawImage(ball,314.5,296.5,5,5);
-    // ctx.drawImage(ball,319,297.2,5,5);
 }
 
 function init_canvas() {
     canvas = document.getElementsByTagName('canvas')[0];
-    // canvas.width = 800;
-    // canvas.height = 600;
+
     ctx = canvas.getContext('2d');
     trackTransforms(ctx);
 
@@ -311,86 +194,58 @@ function init_canvas() {
         document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
         lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
         lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
-        //console.log(lastX + ", " + lastY);
+
         dragStart = ctx.transformedPoint(lastX, lastY);
         dragged = false;
     }, false);
     canvas.addEventListener('mousemove', function(evt) {
-        // if (evt.buttons == 1 || evt.buttons == 3) {
-        //     draw_points();
-        // }
-
-        lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft); ///////////////////////////////////////////////////////////////////////////////////////
-        lastY = evt.offsetY || (evt.pageY - canvas.offsetTop); ///////////////////////////////////////////////////////////////////////////////////////
+        lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+        lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
         var pt = ctx.transformedPoint(lastX, lastY);
-        // var xCoor = Math.round((pt.x / canvas.width) * realWidth);
-        // var yCoor = Math.round((pt.y / canvas.height) * realHeight);
-        var xCoor = Math.round((pt.x / canvas_resized_width) * realWidth);
-        var yCoor = Math.round((pt.y / canvas_resized_height) * realHeight);
+
+        var xCoor = Math.round((pt.x / canvas_width) * realWidth);
+        var yCoor = Math.round((pt.y / canvas_height) * realHeight);
 
         if (xCoor >= 0 && xCoor <= realWidth && yCoor >= 0 && yCoor <= realHeight) {
             document.getElementById("x").innerHTML = xCoor;
             document.getElementById("y").innerHTML = yCoor;
         }
+
         dragged = true;
         if (dragStart) {
-            var pt = ctx.transformedPoint(lastX, lastY); ///////////////////////////////////////////////////////////////////////////////////////
-            //console.log((pt.x) + ", " + (pt.y)) ///////////////////////////////////////////////////////////////////////////////////////
+            var pt = ctx.transformedPoint(lastX, lastY);
             ctx.translate(pt.x - dragStart.x, pt.y - dragStart.y);
 
-            redraw();
-
-            //debugger;
+            redraw(); //redrawing during dragging image; (redrawing points is after mouseup event [we are releasing mouse button at dragging finish - function 'zoom'])
         }
     }, false);
     canvas.addEventListener('mouseup', function(evt) {
-        draw_points();
+        if (dragged === true) { //<----------------------------------------------------------------------if the image has been dragged
+            draw_points(); //we are redrawing points after moving (in fact, after releasing MB) image---^
+        }
         dragStart = null;
-        if (!dragged) zoom(evt.shiftKey ? -1 : 1);
     }, false);
 
-    // canvas.addEventListener('dblclick', function(evt) {
-    //     document.getElementById("x").innerHTML = canvas.width;
-    //     document.getElementById("y").innerHTML = yy;
-    // });
-
-    var scaleFactor = 1.01;
+    var scaleFactor = config_JSON_object.scale_factor;
     var zoom = function(clicks) {
         var pt = ctx.transformedPoint(lastX, lastY);
         ctx.translate(pt.x, pt.y);
         var factor = Math.pow(scaleFactor, clicks);
         ctx.scale(factor, factor);
         ctx.translate(-pt.x, -pt.y);
-        redraw();
+        redraw(); //redrawing image and points during scaling image
         draw_points();
     }
 
     var handleScroll = function(evt) {
-        //console.log("handled");
         var delta = evt.wheelDelta ? evt.wheelDelta / 40 : evt.detail ? -evt.detail : 0;
-        if (delta) zoom(delta);
+        if (delta) zoom(delta); //here in zoom is rerendering image and points during scaling using mousewheel
         return evt.preventDefault() && false;
     };
 
     canvas.addEventListener('DOMMouseScroll', handleScroll, false);
+
     canvas.addEventListener('mousewheel', handleScroll, false);
-    canvas.addEventListener("mousewheel", function() {
-        draw_points();
-
-        // ctx.beginPath();
-        // ctx.fillRect(canvas.width - 3, 15, 3, 3);
-        // ctx.fillRect(0, 0, 3, 3);
-        // ctx.fillRect(220, 110, 30, 30);
-        // ctx.fillRect(tabX[1], tabY[1], 30, 30);
-        // ctx.fillRect(tabX[2], tabY[2], 30, 30);
-        // // ctx.moveTo(20, 20);
-        // // ctx.lineTo(20, 100);
-        // // ctx.lineTo(70, 100);
-        // ctx.fillStyle = "yellow";
-        // ctx.stroke();
-
-        //console.log(canvas.width);
-    });
 
     canvas.addEventListener("dblclick", function(evt) {
         if (lock_flag === true) {
@@ -398,26 +253,24 @@ function init_canvas() {
             var Y = evt.offsetY || (evt.pageY - canvas.offsetTop);
             var pt = ctx.transformedPoint(X, Y);
             var pt2 = ctx.transformedPoint(0, 0);
-            // var xCoor = Math.round((pt.x / canvas.width) * realWidth);
-            // var yCoor = Math.round((pt.y / canvas.height) * realHeight);
-            var xCoor = Math.round((pt.x / canvas_resized_width) * realWidth);
-            var yCoor = Math.round((pt.y / canvas_resized_height) * realHeight);
-            //alert(pt.x + ", " + pt.y);
-            //alert(String(pt.x) + ", " + String(evt.offsetX));
-            //alert(pt2.x);
-            tabX.push(Math.round(pt.x));
-            tabY.push(Math.round(pt.y));
-            tabColor.push("green");
-            count++;
-            //read_data();
-            // document.getElementById("x").innerHTML = String(xCoor);
-            // document.getElementById("y").innerHTML = String(yCoor);
+
+            var xCoor = Math.round((pt.x / canvas_width) * realWidth);
+            var yCoor = Math.round((pt.y / canvas_height) * realHeight);
+
+            coordinates_object = {
+                "x_on_screen": Math.round(pt.x),
+                "y_on_screen": Math.round(pt.y),
+                "x_in_real": xCoor,
+                "y_in_real": yCoor,
+                "color": String(0)
+            };
+
+            coordinates_array.push(coordinates_object);
+
             draw_points();
-            // $("#data-list-group1").append("X: " + String(xCoor) + " Y: " + String(yCoor) + "<br>");
+
             document.getElementById("info").innerHTML = "Współrzędna X: " + String(xCoor) + "<br> Współrzędna Y: " + String(yCoor);
         }
-        //console.log(xCoor + ", " + yCoor);
-        //console.log(canvas.width + ", " + canvas.height);
     });
 
     canvas.addEventListener("contextmenu", function(evt) {
@@ -431,20 +284,22 @@ function init_canvas() {
                 var X = evt.offsetX || (evt.pageX - canvas.offsetLeft);
                 var Y = evt.offsetY || (evt.pageY - canvas.offsetTop);
                 var pt = ctx.transformedPoint(X, Y);
-                // var xCoor = Math.round((pt.x / canvas.width) * realWidth);
-                // var yCoor = Math.round((pt.y / canvas.height) * realHeight);
-                var xCoor = Math.round((pt.x / canvas_resized_width) * realWidth);
-                var yCoor = Math.round((pt.y / canvas_resized_height) * realHeight);
-                tabX.push(Math.round(pt.x));
-                tabY.push(Math.round(pt.y));
-                tabColor.push("red");
-                count++;
 
-                //alert(tabY + "\n" + tabX + "\n" + tabColor)
-                // document.getElementById("x").innerHTML = String(xCoor);
-                // document.getElementById("y").innerHTML = String(yCoor);
+                var xCoor = Math.round((pt.x / canvas_width) * realWidth);
+                var yCoor = Math.round((pt.y / canvas_height) * realHeight);
+
+                coordinates_object = {
+                    "x_on_screen": Math.round(pt.x),
+                    "y_on_screen": Math.round(pt.y),
+                    "x_in_real": xCoor,
+                    "y_in_real": yCoor,
+                    "color": String(1)
+                };
+
+                coordinates_array.push(coordinates_object);
+
                 draw_points();
-                // $("#data-list-group2").append("X: " + String(xCoor) + " Y: " + String(yCoor) + "<br>");
+
                 document.getElementById("info").innerHTML = "Współrzędna X: " + String(xCoor) + "<br> Współrzędna Y: " + String(yCoor);
             }
         }
@@ -454,24 +309,23 @@ function init_canvas() {
     function cc() {
         rmb = 0;
     }
+    
     canvas.addEventListener("click", function(evt) {
         if (evt.shiftKey) {
             if (lock_flag === true) {
+                redraw();
                 document.getElementById("info").innerHTML = "Współrzędna X: <br> Współrzędna Y: ";
                 var X = evt.offsetX || (evt.pageX - canvas.offsetLeft);
                 var Y = evt.offsetY || (evt.pageY - canvas.offsetTop);
                 var pt = ctx.transformedPoint(X, Y);
                 var distance;
 
-                for (i in tabX) {
-                    distance = Math.sqrt(Math.pow(pt.x - tabX[i], 2) + Math.pow(pt.y - tabY[i], 2));
-                    if (distance < 8) {
-                        tabX.splice(i, 1);
-                        tabY.splice(i, 1);
-                        tabColor.splice(i, 1);
+                for (i in coordinates_array) {
+                    distance = Math.sqrt(Math.pow(pt.x - coordinates_array[i].x_on_screen, config_JSON_object.power) + Math.pow(pt.y - coordinates_array[i].y_on_screen, config_JSON_object.power));
+                    if (distance < config_JSON_object.distance) {
+                        coordinates_array.splice(i, 1);
                         draw_points();
                     }
-                    //array.splice(index, 1);
                 }
             }
         }
@@ -481,51 +335,21 @@ function init_canvas() {
 
 
 function draw_points() {
-    console.log("up");
-    //redraw();
-    //var tab = "";
     document.getElementById("data-list-group1").innerHTML = "";
     document.getElementById("data-list-group2").innerHTML = "";
-    for (i = 0; i < count; i++) {
-        //if (tabColor[i] == "green") 
+    for (i in coordinates_array) {
         {
-            if (tabColor[i] === "green")
-                $("#data-list-group1").append("X: " + String(Math.round((tabX[i] / canvas.width) * realWidth)) + " Y: " + String(Math.round((tabY[i] / canvas.height) * realHeight)) + "<br>");
-            if (tabColor[i] === "red")
-                $("#data-list-group2").append("X: " + String(Math.round((tabX[i] / canvas.width) * realWidth)) + " Y: " + String(Math.round((tabY[i] / canvas.height) * realHeight)) + "<br>");
-            //debugger;
+            if (coordinates_array[i].color === "0")
+                $("#data-list-group1").append("X: " + String(coordinates_array[i].x_in_real) + " Y: " + String(coordinates_array[i].y_in_real) + "<br>");
+            else
+                $("#data-list-group2").append("X: " + String(coordinates_array[i].x_in_real) + " Y: " + String(coordinates_array[i].y_in_real) + "<br>");
+
             ctx.beginPath();
-            ctx.fillStyle = String(tabColor[i]) === "green" ? "green" : "red";
-            ctx.fillRect(parseInt(tabX[i]) - 2, parseInt(tabY[i]) - 2, 4, 4);
-
-
-            //tab += String(tabX[i]) + ", " + String(tabY[i]) + ", " + String(tabColor[i]) + "\n";
-            //ctx.stroke();
+            ctx.fillStyle = coordinates_array[i].color === "0" ? "green" : "red";
+            ctx.fillRect(coordinates_array[i].x_on_screen - config_JSON_object.marker_width_and_height / 2, coordinates_array[i].y_on_screen - config_JSON_object.marker_width_and_height / 2, config_JSON_object.marker_width_and_height, config_JSON_object.marker_width_and_height);
         }
-        // console.log(tabX[i] + ", " + tabY[i] + ", " + tabColor[i]);
-
     }
-    // var tab = "";
-    // for (i = 0; i < count; i++)
-    //     tab += String(tabX[i]) + ", " + String(tabY[i]) + ", " + String(tabColor[i]) + "\n";
-    // alert(tab);
-
-    // ctx.stroke();
-
-
-    // ctx.beginPath();
-    // for (i = 0; i < count; i++) {
-    //     if (tabColor[i] == "red") {
-    //         ctx.fillRect(tabX[i] - 2, tabY[i] - 2, 4, 4);
-    //         console.log("red");
-    //         ctx.fillStyle = "red";
-    //     }
-    //     // console.log(tabX[i] + ", " + tabY[i] + ", " + tabColor[i]);
-
-    // }
-
-
-
+    console.log("All points redrawn!!!");
 }
 
 function trackTransforms(ctx) {
@@ -591,79 +415,3 @@ function trackTransforms(ctx) {
         return pt.matrixTransform(xform.inverse());
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function FindPosition(oElement) {
-//     if (typeof(oElement.offsetParent) != "undefined") {
-//         for (var posX = 0, posY = 0; oElement; oElement = oElement.offsetParent) {
-//             posX += oElement.offsetLeft;
-//             posY += oElement.offsetTop;
-//         }
-//         return [posX - 1, posY];
-//     } else {
-//         return [oElement.x, oElement.y];
-//     }
-// }
-
-//function GetCoordinates(myImg) {
-//
-//     if (lock_flag === true) {
-//         var PosX = 0;
-//         var PosY = 0;
-//         var ImgPos;
-//         ImgPos = FindPosition(myImg);
-//         if (!e) var e = window.event;
-//         if (e.pageX || e.pageY) {
-//             PosX = e.pageX;
-//             PosY = e.pageY;
-//         } else if (e.clientX || e.clientY) {
-//             PosX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-//             PosY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-//         }
-//         PosX = PosX - ImgPos[0];
-//         PosY = PosY - ImgPos[1];
-
-//         var img_width = document.getElementById("myCanvas").width;
-//         var img_height = document.getElementById("myCanvas").height;
-
-//         axx = PosX;
-//         ayy = PosY;
-
-//         xx = Math.round(PosX / img_width * realWidth); //SCALING TO DIMENSIONS OF ORIGINAL IMAGE
-//         yy = Math.round(PosY / img_height * realHeight);
-
-//         calculateZoomCoordinates();
-//     }
-// }
-
-//function calculateZoomCoordinates() {
-
-// var position = $("#ddd").css('backgroundPosition').split(" ");
-
-// var backgroundPosX = Math.abs(parseInt(position[0].replace("px", "")));
-// var backgroundPosY = Math.abs(parseInt(position[1].replace("px", "")));
-// var backgroundPosX = Math.abs(parseInt($("#ddd").css('backgroundPosition-x').replace("px", "")));
-// var backgroundPosY = Math.abs(parseInt($("#ddd").css('backgroundPosition-y').replace("px", "")));
-
-
-//console.log(backgroundPosX + " " + backgroundPosY);
-
-// document.getElementById("x").innerHTML = xx;
-// document.getElementById("y").innerHTML = yy;
-//}

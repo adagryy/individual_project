@@ -4,10 +4,10 @@ var coordinatesxls = "";
 
 function save_to_csv() {
     if (lock_flag === true) {
-        if (tabX.length === 0)
+        if (coordinates_array.length === 0)
             coordinates = "none";
-        for (i in tabX) {
-            coordinates += String(tabColor[i]) + ";" + String(Math.round((tabX[i] / canvas_resized_width) * realWidth)) + ";" + String(Math.round((tabY[i] / canvas_resized_height) * realHeight)) + ";" + "\n";
+        for (i in coordinates_array) {
+            coordinates += String(coordinates_array[i].color === "0" ? "green" : "red") + ";" + String(coordinates_array[i].x_in_real) + ";" + String(coordinates_array[i].y_in_real) + ";" + "\n";
         }
         var data = new FormData();
         data.append("data", coordinates);
@@ -23,10 +23,10 @@ function save_to_csv() {
 function save_to_xls() {
     if (lock_flag === true) {
         coordinatesxls += "<table>";
-        if (tabX.length === 0)
+        if (coordinates_array.length === 0)
             coordinatesxls = "none";
-        for (i in tabX) {
-            coordinatesxls += "<tr><td>" + String(tabColor[i]) + "</td><td>" + String(Math.round((tabX[i] / canvas_resized_width) * realWidth)) + "</td><td>" + String(Math.round((tabY[i] / canvas_resized_height) * realHeight)) + "</td></tr>"
+        for (i in coordinates_array) {
+            coordinatesxls += "<tr><td>" + String(coordinates_array[i].color === "0" ? "green" : "red") + "</td><td>" + String(coordinates_array[i].x_in_real) + "</td><td>" + String(coordinates_array[i].y_in_real) + "</td></tr>"
         }
         var data = new FormData();
         data.append("data", coordinatesxls);
@@ -53,22 +53,34 @@ function loadCSV() {
         xhttp.send();
 
 
-        tabX = [];
-        tabY = [];
-        tabColor = [];
-        count = 0;
+        // tabX = [];
+        // tabY = [];
+        // tabColor = [];
+        // count = 0;
+
+        coordinates_array = [];
+        var temp_coordinates_array_object;
 
         var arr = data.split("\n");
         var splitted_coordinates = [];
-        arr.splice(-1, 1);//last row is empty, but still exists - and we are removing it 
+        arr.splice(-1, 1); //last row is empty, but still exists - and we are removing it 
         for (i in arr) {
-            count++;
+            //count++;
             splitted_coordinates = [];
             splitted_coordinates = arr[i].split(";");
             //console.log(splitted_coordinates[0] + " " + splitted_coordinates[1] + " " + splitted_coordinates[2] + " " + String(canvas.height));
-            tabColor[i] = splitted_coordinates[0];
-            tabX[i] = Math.round((parseInt(splitted_coordinates[1]) / realWidth) * canvas.width);
-            tabY[i] = Math.round((parseInt(splitted_coordinates[2]) / realHeight) * canvas.height);
+            temp_coordinates_array_object = {
+                "x_on_screen": Math.round((parseInt(splitted_coordinates[1]) / realWidth) * canvas.width),
+                "y_on_screen": Math.round((parseInt(splitted_coordinates[2]) / realHeight) * canvas.height),
+                "x_in_real": parseInt(splitted_coordinates[1]),
+                "y_in_real": parseInt(splitted_coordinates[2]),
+                "color": splitted_coordinates[0] === "green" ? "1" : "0"
+            };
+
+            coordinates_array.push(temp_coordinates_array_object);
+            // tabColor[i] = splitted_coordinates[0];
+            // tabX[i] = Math.round((parseInt(splitted_coordinates[1]) / realWidth) * canvas.width);
+            // tabY[i] = Math.round((parseInt(splitted_coordinates[2]) / realHeight) * canvas.height);
         }
         //alert(data)
         //redraw();
