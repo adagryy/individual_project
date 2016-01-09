@@ -74,7 +74,7 @@ function loadCSV() {
                 "y_on_screen": Math.round((parseInt(splitted_coordinates[2]) / realHeight) * canvas.height),
                 "x_in_real": parseInt(splitted_coordinates[1]),
                 "y_in_real": parseInt(splitted_coordinates[2]),
-                "color": splitted_coordinates[0] === "green" ? "1" : "0"
+                "color": splitted_coordinates[0] === "green" ? "0" : "1"
             };
 
             coordinates_array.push(temp_coordinates_array_object);

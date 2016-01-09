@@ -49,9 +49,9 @@ function initialize_app() {
     });
     $("#reset_filters").click(function() { //RESETS IMAGE FILTERS AFTER CLICKING "RESET FILTERS BUTTON"
         $('#slider').slider('value', config_JSON_object.default_brightness_reset_value);
-        $("#amount").val($("#slider").slider("value"));
+        document.getElementById("amount").innerHTML = $("#slider").slider("value");
         $('#slider2').slider('value', config_JSON_object.default_contrast_reset_value);
-        $("#amount2").val($("#slider2").slider("value"));
+        document.getElementById("amount2").innerHTML = $("#slider").slider("value");
         changeBrightness_Contrast();
     });
 
@@ -63,11 +63,12 @@ function initialize_app() {
             max: config_JSON_object.slider_max_value,
             value: config_JSON_object.slider_default_value,
             slide: function(event, ui) {
-                $("#amount").val(ui.value);
+                document.getElementById("amount").innerHTML = ui.value;
+                //$("#amount").val(ui.value);
                 changeBrightness_Contrast();
             }
         });
-        $("#amount").val($("#slider").slider("value")); //inserts the beginning value of the slider
+        document.getElementById("amount").innerHTML = $("#slider").slider("value"); //inserts the beginning value of the slider
     });
 
     $(function() { //CHANGE CONTRAST SLIDER HANDLER
@@ -78,11 +79,12 @@ function initialize_app() {
             max: config_JSON_object.slider_max_value,
             value: config_JSON_object.slider_default_value,
             slide: function(event, ui) {
+                document.getElementById("amount2").innerHTML = ui.value;
                 $("#amount2").val(ui.value);
                 changeBrightness_Contrast();
             }
         });
-        $("#amount2").val($("#slider2").slider("value")); //inserts the beginning value of the slider
+        document.getElementById("amount2").innerHTML = $("#slider").slider("value"); //inserts the beginning value of the slider
     });
 
 }
@@ -368,7 +370,7 @@ function draw_points() {
             ctx.fillRect(coordinates_array[i].x_on_screen - config_JSON_object.marker_width_and_height / 2, coordinates_array[i].y_on_screen - config_JSON_object.marker_width_and_height / 2, config_JSON_object.marker_width_and_height, config_JSON_object.marker_width_and_height);
         }
     }
-    console.log("All points redrawn!!!");
+    console.log("All points has been redrawn!!!");
 }
 
 function trackTransforms(ctx) {

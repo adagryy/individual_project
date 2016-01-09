@@ -57,36 +57,37 @@ body {
     resize: none;
 }
 
-
 .button_aligned {
     vertical-align: center;
 }
 
-.col-sm-9{
-	display: inline;
+.col-sm-9 {
+    display: inline;
 }
 
 #controls {
     width: 100%;
-    background: red;
-    display: block;
+    margin-bottom: 2%;
 }
 
 .slider-display {
-float: left;
-    display: inline;
-    background: red;
+    display: inline-block;
+    float: left;
+    background: #A8A8A8;
+    width: 50%;
+    border: 3px solid gray;
 }
 
 #slider {
     margin-top: 20px;
-    margin-left: 1%;
-    
+    margin-left: 5%;
 }
 
-.sliders {
-    display: inline-block;
+#slider2 {
+    margin-top: 20px;
+    margin-left: 5%;
 }
+
 
 form,
 table {
